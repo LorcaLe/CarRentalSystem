@@ -1,0 +1,1264 @@
+body{
+font-family:'Poppins',sans-serif;
+margin:0;
+background:#f5f6f8;
+}
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+overflow-x:hidden;
+}
+.topbar{
+
+position:fixed;
+
+top:0;
+left:0;
+right:0;
+
+width:100%;
+
+display:flex;
+
+justify-content:space-between;
+align-items:center;
+
+padding:12px 30px;
+
+background:white;
+
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+
+transition:transform 0.3s;
+
+z-index:999;
+
+box-sizing:border-box;
+
+}
+
+/* Ẩn topbar */
+
+.topbar.hide{
+
+transform:translateY(-100%);
+
+}
+
+.top-trigger{
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:20px;
+
+z-index:998;
+
+}
+.topbar{
+
+backdrop-filter: blur(10px);
+
+background:rgba(255,255,255,0.85);
+
+}
+.logo{
+font-size:20px;
+font-weight:600;
+}
+
+.nav-links a{
+margin-left:20px;
+text-decoration:none;
+color:#333;
+}
+
+/* HERO */
+
+.hero{
+
+height:500px;
+
+background:url("/car_rental/images/main_background.jpg")
+center/cover no-repeat;
+background-size:cover;
+background-position:center;
+
+display:flex;
+flex-direction:column;
+
+justify-content:center;
+align-items:center;
+
+text-align:center;
+
+color:white;
+
+position:relative;
+
+}
+
+.hero::after{
+
+content:"";
+
+position:absolute;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.35);
+
+}
+
+.hero-content{
+
+position:relative;
+
+z-index:2;
+
+}
+
+.hero h1{
+
+font-size:52px;
+
+font-weight:700;
+
+letter-spacing:-0.5px;
+
+}
+
+.hero p{
+
+font-size:18px;
+
+opacity:0.9;
+
+margin-top:10px;
+
+}
+
+.search-box{
+
+background:white;
+
+padding:20px;
+
+border-radius:10px;
+
+margin-top:20px;
+}
+
+.search-box input{
+padding:10px;
+margin-right:10px;
+}
+
+/* MAIN LAYOUT */
+
+.car-layout{
+
+display:grid;
+
+grid-template-columns:250px 1fr;
+
+gap:40px;
+
+padding:50px;
+
+}
+
+/* FILTER */
+
+.filter{
+
+background:white;
+
+padding:20px;
+
+border-radius:12px;
+
+box-shadow:0 6px 18px rgba(0,0,0,0.1);
+
+position:sticky;
+
+top:120px;
+
+height:calc(100vh - 140px);
+
+overflow-y: auto;
+
+padding-right: 10px;
+
+}
+
+.filter::-webkit-scrollbar{
+  width:6px;
+}
+
+.filter::-webkit-scrollbar-thumb{
+  background:#ccc;
+  border-radius:10px;
+}
+
+.filter::-webkit-scrollbar-thumb:hover{
+  background:#999;
+}
+/* VEHICLE GRID */
+.car-layout{
+
+display:grid;
+
+grid-template-columns:260px 1fr;
+
+gap:40px;
+
+align-items: start;
+
+padding:40px;
+
+}
+
+.vehicle-grid{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:25px;
+
+}
+
+.vehicle-card{
+
+background:white;
+
+border-radius:14px;
+
+overflow:hidden;
+
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+
+align-self: flex-start;
+
+text-align:center;
+
+padding-bottom:15px;
+
+transition:transform 0.35s cubic-bezier(.25,.8,.25,1),
+           box-shadow 0.35s ease;
+
+cursor:pointer;
+
+}
+
+
+.vehicle-card h3{
+
+margin-top:12px;
+
+font-weight:600;
+
+}
+
+.vehicle-card p{
+
+color:#666;
+
+margin-top:5px;
+
+}
+
+.vehicle-card img{
+
+width:100%;
+
+height:180px;
+
+object-fit:cover;
+
+transition:transform 0.4s ease;
+
+}
+
+.vehicle-card:hover img{
+
+transform:scale(1.05);
+
+}
+
+.vehicle-card:hover{
+
+transform:translateY(-10px) scale(1.02);
+
+box-shadow:0 18px 35px rgba(0,0,0,0.18);
+
+border:1px solid #f1f1f1;
+
+}
+/* FEATURES */
+
+.features{
+background:white;
+padding:60px;
+text-align:center;
+}
+
+.feature-grid{
+
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:30px;
+
+}
+
+.feature{
+width:200px;
+}
+
+/* Hide scrollbar */
+
+*{
+scrollbar-width:none;
+}
+
+*::-webkit-scrollbar{
+display:none;
+}
+
+/* radio button style */
+
+.radio{
+
+display:flex;
+
+align-items:center;
+
+margin:10px 0;
+
+cursor:pointer;
+
+font-size:14px;
+
+}
+
+.radio input{
+
+display:none;
+
+}
+
+.radio span{
+
+width:16px;
+
+height:16px;
+
+border:2px solid #ccc;
+
+border-radius:50%;
+
+margin-right:10px;
+
+position:relative;
+
+}
+
+.radio input:checked + span{
+
+border-color:#007bff;
+
+}
+
+.radio input:checked + span::after{
+
+content:"";
+
+width:8px;
+
+height:8px;
+
+background:#007bff;
+
+border-radius:50%;
+
+position:absolute;
+
+top:50%;
+left:50%;
+
+transform:translate(-50%,-50%);
+
+}
+
+/* CHAT BUBBLE */
+
+.chat-bubble{
+
+position:fixed;
+
+bottom:30px;
+
+right:30px;
+
+width:60px;
+
+height:60px;
+
+background:#007bff;
+
+color:white;
+
+font-size:24px;
+
+border-radius:50%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+cursor:pointer;
+
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+
+z-index:999;
+
+}
+
+/* CHAT BOX */
+
+.chat-box{
+
+position:fixed;
+
+bottom:100px;
+
+right:30px;
+
+width:280px;
+
+background:white;
+
+border-radius:10px;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+
+display:none;
+
+flex-direction:column;
+
+overflow:hidden;
+
+}
+
+/* HEADER */
+
+.chat-header{
+
+background:#007bff;
+
+color:white;
+
+padding:10px;
+
+display:flex;
+
+justify-content:space-between;
+
+}
+
+/* CONTENT */
+
+.chat-content{
+
+padding:15px;
+
+}
+
+/* TEXTAREA */
+
+.chat-content textarea{
+
+width:100%;
+
+height:70px;
+
+resize:none;
+
+padding:8px;
+
+}
+
+/* BUTTON */
+
+.chat-content button{
+
+margin-top:10px;
+
+width:100%;
+
+padding:8px;
+
+background:#007bff;
+
+color:white;
+
+border:none;
+
+cursor:pointer;
+
+}
+
+.login-btn{
+
+display:block;
+
+text-align:center;
+
+margin-top:10px;
+
+color:#007bff;
+
+}
+
+.user-menu{
+
+position:relative;
+display:flex;
+align-items:center;
+cursor:pointer;
+
+}
+
+.user-trigger{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+padding:6px 12px;
+border-radius:30px;
+
+transition:0.3s;
+
+}
+
+.user-trigger:hover{
+background:#f3f4f6;
+}
+
+.avatar{
+
+width:34px;
+height:34px;
+
+border-radius:50%;
+background:#2563eb;
+
+color:white;
+font-weight:600;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+}
+
+.username{
+font-weight:500;
+}
+
+.user-dropdown{
+
+position:absolute;
+top:45px;
+right:0;
+
+background:white;
+
+border-radius:10px;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.15);
+
+width:180px;
+
+display:none;
+flex-direction:column;
+
+overflow:hidden;
+
+}
+
+.user-dropdown a{
+
+padding:12px 16px;
+
+text-decoration:none;
+color:#333;
+
+transition:0.2s;
+
+}
+
+.user-dropdown a:hover{
+background:#f3f4f6;
+}
+
+.logout{
+color:#ef4444;
+}
+
+.user-menu:hover .user-dropdown{
+display:flex;
+}
+
+.avatar img{
+
+width:34px;
+height:34px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+.booking-wrapper{
+
+width:90%;
+max-width:1100px;
+
+margin:auto;
+margin-top:-60px;
+
+}
+
+/* vùng hover */
+
+.search-zone{
+
+margin-top:35px;
+
+display:flex;
+justify-content:center;
+
+}
+
+/* panel */
+
+.search-card{
+
+background:rgba(255,255,255,0.75);
+
+backdrop-filter:blur(16px);
+
+border-radius:20px;
+
+padding:18px 24px;
+
+box-shadow:0 18px 50px rgba(0,0,0,0.18);
+
+border:1px solid rgba(255,255,255,0.35);
+
+max-width:900px;
+
+margin-top:35px;
+
+.search-card{
+
+animation:floatBar 6s ease-in-out infinite;
+
+}
+
+@keyframes floatBar{
+
+0%{transform:translateY(0);}
+50%{transform:translateY(-4px);}
+100%{transform:translateY(0);}
+
+}
+position:relative;
+z-index:10;
+pointer-events:auto;
+}
+/* hover để hiện */
+
+.hero:hover .search-card{
+
+opacity:1;
+transform:translateY(0);
+
+}
+
+/* grid */
+
+.search-grid{
+
+display:grid;
+
+grid-template-columns:
+
+2fr
+1fr
+1fr
+1fr
+1fr
+auto;
+
+gap:16px;
+
+align-items:center;
+
+}
+
+/* field */
+
+.field{
+
+display:flex;
+flex-direction:column;
+
+}
+
+.field label{
+
+font-size:11px;
+
+color:#777;
+
+margin-bottom:4px;
+
+}
+
+.field input{
+
+border:none;
+
+background:white;
+
+padding:10px 12px;
+
+border-radius:10px;
+
+font-size:14px;
+
+outline:none;
+
+transition:0.2s;
+
+box-shadow:0 2px 6px rgba(0,0,0,0.06);
+
+}
+
+.field input:focus{
+
+box-shadow:0 4px 12px rgba(0,0,0,0.15);
+
+transform:translateY(-1px);
+
+}
+
+/* location rộng hơn */
+
+.location input{
+
+font-weight:500;
+
+}
+
+/* button */
+
+.search-btn{
+
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+
+color:white;
+
+border:none;
+
+padding:12px 22px;
+
+border-radius:12px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:0.25s;
+
+box-shadow:0 6px 18px rgba(37,99,235,0.4);
+
+}
+
+.search-btn:hover{
+
+transform:translateY(-2px);
+
+box-shadow:0 10px 28px rgba(37,99,235,0.6);
+
+}
+
+/* grid 2 cột */
+.brand-filter{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:10px;
+}
+
+/* ẩn checkbox */
+.brand-option input{
+display:none;
+}
+
+/* box logo */
+.brand-option{
+display:flex;
+justify-content:center;
+align-items:center;
+background:white;
+border-radius:10px;
+padding:8px;
+cursor:pointer;
+border:2px solid transparent;
+transition:0.2s;
+}
+
+/* logo */
+.brand-option img{
+width:70px;
+height:auto;
+}
+
+/* hover */
+.brand-option:hover{
+transform:scale(1.05);
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* khi được chọn */
+.brand-option input:checked + img{
+filter:none;
+}
+
+.brand-option input:checked{
+}
+
+.brand-option:has(input:checked){
+border:2px solid #2a6df4;
+background:#eef3ff;
+}
+
+/* MODAL */
+
+.car-modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.6);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+
+.modal-container{
+width:850px;
+background:white;
+border-radius:18px;
+padding:25px;
+animation:modalZoom .25s ease;
+}
+
+@keyframes modalZoom{
+from{
+transform:scale(.8);
+opacity:0;
+}
+to{
+transform:scale(1);
+opacity:1;
+}
+}
+
+.modal-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:25px;
+}
+
+.modal{
+
+display:none;
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.5);
+
+justify-content:center;
+align-items:center;
+
+}
+
+/* GALLERY */
+
+.main-image{
+width:100%;
+height:260px;
+object-fit:cover;
+border-radius:12px;
+}
+
+.thumb-list{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.thumb-list img{
+width:70px;
+height:50px;
+object-fit:cover;
+border-radius:8px;
+cursor:pointer;
+opacity:.7;
+}
+
+.thumb-list img:hover{
+opacity:1;
+}
+
+/* INFO */
+
+.brand-row{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.brand-logo{
+width:40px;
+}
+
+.price{
+font-size:22px;
+font-weight:600;
+color:#2e6cff;
+margin:15px 0;
+}
+
+.specs{
+display:flex;
+gap:12px;
+margin-bottom:20px;
+}
+
+.spec{
+background:#f4f6fb;
+padding:8px 12px;
+border-radius:8px;
+font-size:14px;
+}
+
+.description{
+color:#555;
+margin-bottom:20px;
+}
+
+.modal-footer{
+margin-top:20px;
+}
+
+.book-btn {
+  width: 60%;
+  padding: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb; /* xanh dương sang trọng, có thể đổi thành đen hoặc vàng */
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  animation: pulseMinimal 2.5s infinite;
+}
+
+@keyframes pulseMinimal {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(37,99,235,0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(37,99,235,0.8);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(37,99,235,0.6);
+  }
+}
+
+.book-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+
+.close-btn{
+position:absolute;
+right:20px;
+font-size:22px;
+cursor:pointer;
+}
+
+.modal-grid{
+display:grid;
+grid-template-columns:420px 1fr;
+gap:40px;
+align-items:start;
+}
+
+/* LEFT */
+
+.left-side{
+text-align:center;
+}
+
+.main-image{
+width:100%;
+height:260px;
+object-fit:cover;
+border-radius:14px;
+}
+
+.thumb-list{
+display:flex;
+gap:10px;
+margin-top:12px;
+justify-content:center;
+}
+
+.thumb-list img{
+width:80px;
+height:60px;
+object-fit:cover;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+border:2px solid transparent;
+}
+
+.thumb-list img:hover{
+transform:scale(1.05);
+border-color:#2e6cff;
+}
+
+.rating{
+margin-top:12px;
+font-size:18px;
+color:#ffb400;
+}
+
+/* RIGHT */
+
+.brand-row{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.brand-logo{
+width:40px;
+}
+
+.price{
+font-size:22px;
+font-weight:600;
+color:#2e6cff;
+margin:15px 0;
+}
+
+.specs{
+display:flex;
+gap:10px;
+margin-bottom:15px;
+}
+
+.spec{
+background:#f4f6fb;
+padding:6px 10px;
+border-radius:6px;
+font-size:14px;
+}
+
+.description{
+color:#555;
+margin-bottom:20px;
+line-height:1.5;
+}
+
+.description{
+max-height:200px;
+overflow-y:auto;
+position:relative;
+}
+
+/* scroll bar đẹp hơn */
+
+.description::-webkit-scrollbar{
+width:6px;
+}
+
+.description::-webkit-scrollbar-thumb{
+background:#cbd5e1;
+border-radius:10px;
+}
+
+.description::-webkit-scrollbar-thumb:hover{
+background:#94a3b8;
+}
+
+/* Profile Modal */
+
+.profile-modal{
+
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+backdrop-filter:blur(4px);
+
+justify-content:center;
+align-items:center;
+
+z-index:999;
+
+}
+
+.profile-card{
+
+background:white;
+width:420px;
+border-radius:14px;
+box-shadow:0 20px 60px rgba(0,0,0,0.3);
+padding:25px;
+
+animation:popup .3s ease;
+
+}
+
+@keyframes popup{
+
+from{
+transform:scale(.9);
+opacity:0;
+}
+
+to{
+transform:scale(1);
+opacity:1;
+}
+
+}
+
+.profile-header{
+
+display:flex;
+align-items:center;
+gap:15px;
+margin-bottom:20px;
+
+}
+
+.profile-avatar{
+
+width:55px;
+height:55px;
+background:#2563eb;
+color:white;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:20px;
+font-weight:bold;
+
+border-radius:50%;
+
+}
+
+.close{
+
+margin-left:auto;
+cursor:pointer;
+font-size:18px;
+
+}
+
+.profile-body input{
+
+width:100%;
+padding:10px;
+margin:6px 0;
+
+border:1px solid #ddd;
+border-radius:6px;
+
+}
+
+.form-row{
+
+display:flex;
+gap:10px;
+
+}
+
+.btn-primary{
+
+width:100%;
+padding:10px;
+margin-top:10px;
+
+background:#2563eb;
+color:white;
+
+border:none;
+border-radius:6px;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+.btn-primary:hover{
+
+background:#1d4ed8;
+
+}
