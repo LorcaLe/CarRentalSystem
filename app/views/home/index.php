@@ -4,10 +4,13 @@
 <head>
 
 <title>Luxury Car Rental</title>
-
+<link rel="stylesheet" href="/car_rental/assets/css/book.css">
 <link rel="stylesheet" href="/car_rental/assets/css/style.css">
+<link rel="stylesheet" href="/car_rental/assets/css/layout.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 
 <body>
@@ -47,6 +50,10 @@
 
 <a href="/car_rental/public/enquiry">
 💬 Support
+</a>
+
+<a href="/car_rental/public/register-car">
+🚗 Register Car
 </a>
 
 <a href="/car_rental/public/logout" class="logout">
@@ -162,19 +169,19 @@ Above 2M
 <h4>Seats</h4>
 
 <label class="radio">
-<input type="checkbox" name="seats" value="4">
+<input type="checkbox" name="seats[]" value="4">
 <span></span>
 4 seats
 </label>
 
 <label class="radio">
-<input type="checkbox" name="seats" value="5">
+<input type="checkbox" name="seats[]" value="5">
 <span></span>
 5 seats
 </label>
 
 <label class="radio">
-<input type="checkbox" name="seats" value="7">
+<input type="checkbox" name="seats[]" value="7">
 <span></span>
 7 seats
 </label>
@@ -271,48 +278,36 @@ Above 2M
 </div>
 </section>
 
-<!-- CHAT BUTTON -->
+<div id="chat-wrapper">
+    <div class="chat-bubble" onclick="toggleChat()">
+        <i class="fab fa-facebook-messenger"></i>
+    </div>
 
-<div class="chat-bubble" onclick="toggleChat()">
-
-💬
-
-</div>
-
-
-<!-- CHAT BOX -->
-
-<div class="chat-box" id="chatBox">
-
-<div class="chat-header">
-
-Customer Support
-
-<span onclick="toggleChat()">✖</span>
-
-</div>
-
-<div class="chat-content" id="chatContent">
-
-<?php if(isset($_SESSION['user'])){ ?>
-
-<form action="/car_rental/app/views/support/enquiry.php" method="POST">
-
-<textarea name="message" placeholder="Type your question..."></textarea>
-
-<button type="submit">Send</button>
-
-</form>
-
-<?php } else { ?>
-
-<p>Bạn hãy đăng nhập để có thể đặt câu hỏi</p>
-
-<a href="/car_rental/app/views/auth/login.php" class="login-btn">Login</a>
-
-<?php } ?>
-
-</div>
+    <div class="chat-box" id="chatBox" style="display: none;">
+        <div class="chat-header">
+            <span>Customer Support</span>
+            <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:18px;">&times;</button>
+        </div>
+        
+        <div class="chat-content">
+            <div id="chatDisplay" style="height: 300px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+            </div>
+            
+            <?php if(isset($_SESSION['user'])): ?>
+                <div class="chat-input-area">
+                    <textarea id="msgInput" placeholder="Aa" onkeydown="handleEnter(event)"></textarea>
+                    
+                    <button onclick="sendChat()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            <?php else: ?>
+                <div class="p-3 text-center">
+                    <p class="small text-muted">Please <a href="/car_rental/public/login" class="text-primary fw-bold">Login</a> to chat</p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 <div class="car-modal" id="carModal">
@@ -372,7 +367,7 @@ Customer Support
 </div>
 
 <div class="modal-footer" style="text-align:center;">
-    <button class="book-btn">BOOK NOW</button>
+    <button type="button" class="book-btn" onclick="openBookingModal()">BOOK NOW</button>
 </div>
 
 </div>
@@ -443,6 +438,61 @@ Update Password
 </div>
 
 </div>
+
+<!-- Book Modal -->
+
+<div class="car-modal" id="bookingModal" style="display: none; align-items: center; justify-content: center;">
+    <div class="modern-modal-container">
+        <div class="modern-modal-header">
+            <h3 class="modern-modal-title">Booking Details</h3>
+        </div>
+
+        <div class="modern-modal-body">
+            <form action="/car_rental/public/checkout" method="POST">
+                <input type="hidden" name="vehicle_id" id="popup_vehicle_id">
+
+                <div class="modern-input-group">
+                    <label class="modern-label">Pickup Location</label>
+                    <input type="text" name="pickup_location" id="popup_location" class="modern-input" required placeholder="Enter city or airport">
+                </div>
+
+                <div class="modern-grid">
+                    <div class="modern-input-group">
+                        <label class="modern-label">Pickup Date</label>
+                        <input type="date" name="pickup_date" id="popup_pdate" class="modern-input" required oninput="calculateTotal()">
+                    </div>
+                    <div class="modern-input-group">
+                        <label class="modern-label">Pickup Time</label>
+                        <input type="time" name="pickup_time" id="popup_ptime" class="modern-input" required oninput="calculateTotal()">
+                    </div>
+                </div>
+
+                <div class="modern-grid">
+                    <div class="modern-input-group">
+                        <label class="modern-label">Return Date</label>
+                        <input type="date" name="return_date" id="popup_rdate" class="modern-input" required oninput="calculateTotal()">
+                    </div>
+                    <div class="modern-input-group">
+                        <label class="modern-label">Return Time</label>
+                        <input type="time" name="return_time" id="popup_rtime" class="modern-input" required oninput="calculateTotal()">
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; border: 1px solid #e2e8f0;">
+                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">TOTAL ESTIMATED</span>
+                    <h3 id="displayTotal" style="margin: 5px 0 2px 0; color: #2563eb; font-weight: 700;">0 VND</h3>
+                    
+                    <small id="dayDetail" style="color: #64748b; font-style: italic; font-size: 0.8rem;"></small>
+                    
+                    <input type="hidden" name="total_price" id="checkoutTotalPrice">
+                </div>
+
+                <button type="submit" class="modern-btn">Confirm & Go to Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -481,19 +531,93 @@ topbar.classList.remove("hide");
 
 });
 
-function toggleChat(){
-
-let chat = document.getElementById("chatBox");
-
-if(chat.style.display === "flex"){
-
-chat.style.display = "none";
-
-}else{
-
-chat.style.display = "flex";
-
+// 1. Hàm đóng/mở và Load tin nhắn
+function toggleChat() {
+    const chatBox = document.getElementById('chatBox');
+    if (chatBox.style.display === 'none' || chatBox.style.display === '') {
+        chatBox.style.display = 'block';
+        loadMessages(); // Gọi hàm load tin nhắn từ server
+    } else {
+        chatBox.style.display = 'none';
+    }
 }
+
+// 2. Hàm lấy tin nhắn từ Database (getEnquiries)
+function loadMessages() {
+    const display = document.getElementById('chatDisplay');
+    if (!display) return;
+
+    fetch('/car_rental/public/get-enquiries')
+    .then(res => res.json())
+    .then(data => {
+        let html = '';
+        
+        data.forEach(item => {
+            // Hiển thị tin nhắn của Người dùng (User) - Nằm bên PHẢI, màu XANH
+            if (item.user_msg && item.user_msg.trim() !== "") {
+                html += `
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+                        <div style="background: #0084ff; color: white; padding: 8px 15px; border-radius: 18px 18px 4px 18px; max-width: 80%; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            ${item.user_msg}
+                            <div style="font-size: 10px; opacity: 0.7; text-align: right; margin-top: 4px;">${item.time}</div>
+                        </div>
+                    </div>`;
+            }
+
+            // Hiển thị tin nhắn của Admin (Reply) - Nằm bên TRÁI, màu XÁM
+            if (item.admin_rep && item.admin_rep.trim() !== "") {
+                html += `
+                    <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                        <div style="background: #e4e6eb; color: #050505; padding: 8px 15px; border-radius: 18px 18px 18px 4px; max-width: 80%; font-size: 14px;">
+                            ${item.admin_rep}
+                            <div style="font-size: 10px; opacity: 0.5; margin-top: 4px;">Support Team</div>
+                        </div>
+                    </div>`;
+            }
+        });
+
+        display.innerHTML = html;
+        // Tự động cuộn xuống tin nhắn cuối cùng
+        display.scrollTop = display.scrollHeight;
+    })
+    .catch(err => console.error("Lỗi tải tin nhắn:", err));
+}
+
+// 3. Hàm gửi tin nhắn (sendEnquiry)
+function handleEnter(event) {
+    // Nếu nhấn Enter mà không giữ Shift
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault(); // Không cho xuống dòng
+        sendChat(); // Gọi hàm gửi
+    }
+}
+
+function sendChat() {
+    const input = document.getElementById('msgInput');
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    // Gửi dữ liệu
+    fetch('/car_rental/public/send-enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'message=' + encodeURIComponent(message)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            input.value = ''; // Xóa nội dung ô nhập
+            loadMessages();   // Load lại khung chat để hiện tin mới
+        }
+    })
+    .catch(err => console.error("Lỗi:", err));
+}
+
+// Hàm bổ trợ để tự động cuộn (dùng trong cả loadMessages)
+function scrollToBottom() {
+    const display = document.getElementById('chatDisplay');
+    display.scrollTop = display.scrollHeight;
 }
 
 document.addEventListener("click",function(e){
@@ -503,6 +627,7 @@ let card=e.target.closest(".vehicle-card");
 if(!card) return;
 
 let id=card.dataset.id;
+
 
 fetch("/car_rental/public/car-detail?id="+id)
 
@@ -567,6 +692,7 @@ document.getElementById("carDescription").innerText=data.description;
 document.getElementById("brandLogo").src=
 "/car_rental/images/"+data.brand_logo;
 
+document.getElementById("bookNowBtn").href = "/car_rental/public/booking-form?vehicle_id=" + data.id;
 
 /* SHOW MODAL */
 
@@ -696,8 +822,9 @@ document.querySelectorAll("input[name='price[]']:checked")
 
 /* seats */
 
-document.querySelectorAll("input[name=seats]:checked")
-.forEach(el=>data.append("seats[]",el.value));
+data.delete("seats[]"); 
+document.querySelectorAll("input[name='seats[]']:checked")
+    .forEach(el => data.append("seats[]", el.value));
 
 /* brand */
 
@@ -783,6 +910,190 @@ document.getElementById("carModal").style.display="flex";
 });
 
 }
+
+/* Open booking modal from car detail */
+
+// Biến toàn cục để lưu ID chiếc xe đang được xem
+
+/* 1. SỰ KIỆN CLICK MỞ XE (Dành cho xe hiển thị sẵn ở trang chủ) */
+document.addEventListener("click", function(e){
+    let card = e.target.closest(".vehicle-card");
+    if(!card) return;
+
+    let id = card.dataset.id;
+    currentSelectedCarId = id; // LƯU ID XE
+
+    fetch("/car_rental/public/car-detail?id="+id)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("mainImage").src = "/car_rental/images/"+data.image;
+        
+        let thumbs = document.getElementById("thumbList");
+        thumbs.innerHTML = "";
+        let images = [data.image, data.image2, data.image3];
+        images.forEach(img => {
+            if(!img) return;
+            let el = document.createElement("img");
+            el.src = "/car_rental/images/"+img;
+            el.onclick = function(){ document.getElementById("mainImage").src=this.src; }
+            thumbs.appendChild(el);
+        });
+
+        document.getElementById("carName").innerText = data.name;
+        document.getElementById("carPrice").innerText = new Intl.NumberFormat().format(data.price_per_day)+" VND/day";
+        
+        let rating = data.rating || 0;
+        document.getElementById("carRating").innerHTML = "⭐ ".repeat(Math.floor(rating)-1) + " " + rating;
+        document.getElementById("carTransmission").innerText = data.transmission;
+        document.getElementById("carFuel").innerText = data.fuel_type;
+        document.getElementById("carSeats").innerText = data.seats+" seats";
+        document.getElementById("carDescription").innerText = data.description;
+        document.getElementById("brandLogo").src = "/car_rental/images/"+data.brand_logo;
+
+        document.getElementById("carModal").style.display = "flex";
+    });
+});
+
+/* 2. HÀM MỞ XE TỪ KẾT QUẢ TÌM KIẾM */
+function openCarModal(id){
+    currentSelectedCarId = id; // LƯU ID XE
+
+    fetch("/car_rental/public/car-detail?id="+id)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("mainImage").src = "/car_rental/images/"+data.image;
+        document.getElementById("carName").innerText = data.name;
+        document.getElementById("carPrice").innerText = new Intl.NumberFormat().format(data.price_per_day)+" VND/day";
+        document.getElementById("carModal").style.display = "flex";
+    });
+}
+
+
+/* 1. HÀM TÍNH TIỀN CHUẨN (Fix lỗi không chạy) */
+function calculateTotal() {
+    const pDate = document.getElementById("popup_pdate").value;
+    const pTime = document.getElementById("popup_ptime").value || "00:00";
+    const rDate = document.getElementById("popup_rdate").value;
+    const rTime = document.getElementById("popup_rtime").value || "00:00";
+    const display = document.getElementById("displayTotal");
+    const detail = document.getElementById("dayDetail");
+    const inputTotal = document.getElementById("checkoutTotalPrice");
+
+    if (pDate && rDate) {
+        const start = new Date(`${pDate}T${pTime}`);
+        const end = new Date(`${rDate}T${rTime}`);
+        const diffMs = end - start;
+
+        if (diffMs <= 0) {
+            display.innerText = "0 VND";
+            detail.innerText = "Return time must be after pickup time";
+            inputTotal.value = 0;
+            return;
+        }
+
+        const totalHours = diffMs / (1000 * 60 * 60);
+        const fullDays = Math.floor(totalHours / 24);
+        const remainingHours = totalHours % 24;
+        let chargedDays = fullDays;
+
+        let note = "";
+        if (fullDays === 0) {
+            chargedDays = 1;
+            note = "(Minimum 1 day charge)";
+        } else {
+            if (remainingHours > 12) {
+                chargedDays += 0.5;
+                note = `(${fullDays} days + 0.5 day for over 12h extra)`;
+            } else if (remainingHours > 0) {
+                note = `(${fullDays} days + ${remainingHours.toFixed(1)}h extra)`;
+            } else {
+                note = `(${fullDays} days)`;
+            }
+        }
+
+        const total = chargedDays * currentCarPrice;
+        display.innerText = new Intl.NumberFormat('vi-VN').format(total) + " VND";
+        detail.innerText = `Charged for ${chargedDays} day(s) ${note}`;
+        inputTotal.value = total;
+    }
+}
+
+/* 2. XỬ LÝ ĐÓNG MODAL KHI BẤM RA NGOÀI */
+window.addEventListener("click", function(e) {
+    const carModal = document.getElementById("carModal");
+    const bookingModal = document.getElementById("bookingModal");
+    const profileModal = document.getElementById("profileModal");
+    
+    const chatBox = document.getElementById('chatBox');
+    const chatWrapper = document.getElementById('chat-wrapper');
+    const chatBubble = document.querySelector('.chat-bubble');
+    // Nếu click đúng vào vùng nền đen (class car-modal hoặc profile-modal)
+    if (e.target === carModal) carModal.style.display = "none";
+    if (e.target === bookingModal) bookingModal.style.display = "none";
+    if (e.target === profileModal) profileModal.style.display = "none";
+
+    if (chatBox.style.display === 'block') {
+        
+        // Kiểm tra xem vị trí click có nằm NGOÀI chat-wrapper hay không
+        // .contains(e.target) kiểm tra xem phần tử bị click có phải con của wrapper không
+        if (!chatWrapper.contains(e.target)) {
+            
+            // Nếu click ra ngoài, ẩn khung chat đi
+            chatBox.style.display = 'none';}}
+});
+
+    // Cập nhật hàm openBookingModal để điền dữ liệu từ thanh Search Bar vào
+    function openBookingModal() {
+        document.getElementById("carModal").style.display = "none";
+        document.getElementById("bookingModal").style.display = "flex";
+
+        // Đồng bộ ID xe
+        document.getElementById("popup_vehicle_id").value = currentSelectedCarId;
+
+        // Đồng bộ từ Search Bar
+        document.getElementById("popup_location").value = document.querySelector("input[name=location]").value;
+        document.getElementById("popup_pdate").value = document.querySelector("input[name=pickup_date]").value;
+        document.getElementById("popup_ptime").value = document.querySelector("input[name=pickup_time]").value;
+        document.getElementById("popup_rdate").value = document.querySelector("input[name=return_date]").value;
+        document.getElementById("popup_rtime").value = document.querySelector("input[name=return_time]").value;
+
+        // Chạy tính tiền lần đầu ngay khi mở modal
+        calculateTotal();
+    }
+
+    // Nếu người dùng đã nhập ngày ở Search Bar trước đó, tự điền vào lịch luôn
+    let sDate = document.querySelector("input[name=pickup_date]").value;
+    let eDate = document.querySelector("input[name=return_date]").value;
+    if(sDate && eDate) {
+        bookingPicker.setDate([sDate, eDate], true);
+    }
+    
+    // Đồng bộ địa điểm từ search bar
+    document.getElementById("popup_location").value = document.querySelector("input[name=location]").value;
+
+
+// Cập nhật lại hàm click mở xe của bạn để gán đơn giá vào biến TOÀN CỤC
+document.addEventListener("click", function(e){
+    let card = e.target.closest(".vehicle-card");
+    if(!card) return;
+
+    let id = card.dataset.id;
+    currentSelectedCarId = id; 
+
+    fetch("/car_rental/public/car-detail?id="+id)
+    .then(res => res.json())
+    .then(data => {
+        currentCarPrice = data.price_per_day; // QUAN TRỌNG: Lưu đơn giá vào biến toàn cục
+        
+        // ... Các code hiển thị ảnh/tên xe của bạn giữ nguyên ...
+        document.getElementById("mainImage").src = "/car_rental/images/"+data.image;
+        document.getElementById("carName").innerText = data.name;
+        document.getElementById("carPrice").innerText = new Intl.NumberFormat().format(data.price_per_day)+" VND/day";
+        document.getElementById("carModal").style.display = "flex";
+    });
+});
 </script>
 </body>
+
+<?php require_once __DIR__ . "/../layouts/footer.php"; ?>
 </html>

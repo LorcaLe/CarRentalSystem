@@ -1,0 +1,165 @@
+/* Footer Styles */
+.footer {
+    background: #111827; /* Dark elegant background */
+    color: #f3f4f6;
+    padding: 80px 0 30px 0;
+    margin-top: 100px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+    gap: 40px;
+    padding: 0 20px;
+}
+
+.footer-logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.footer-bio {
+    color: #9ca3af;
+    line-height: 1.6;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.footer-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #fff;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: #9ca3af;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.footer-links a:hover {
+    color: #3b82f6;
+    padding-left: 5px;
+}
+
+.contact-info p {
+    color: #9ca3af;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 10px;
+}
+
+.newsletter-form input {
+    background: #1f2937;
+    border: 1px solid #374151;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #fff;
+    flex: 1;
+    font-size: 14px;
+}
+
+.newsletter-form button {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.newsletter-form button:hover {
+    background: #2563eb;
+}
+
+.footer-bottom {
+    border-top: 1px solid #1f2937;
+    margin-top: 60px;
+    padding-top: 30px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.social-links a {
+    display: inline-block;
+    margin-right: 15px;
+    filter: grayscale(1);
+    transition: 0.3s;
+}
+
+.social-links a:hover {
+    filter: grayscale(0);
+}
+
+/* Responsive for Mobile */
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Styling for Google Maps wrapper */
+.map-wrapper {
+    position: relative;
+    filter: grayscale(0.5) contrast(1.1) invert(0.1); /* Slight dark theme for map */
+    transition: 0.5s;
+    border: 1px solid #374151;
+}
+
+.map-wrapper:hover {
+    filter: grayscale(0); /* Highlighting when hovered */
+    transform: scale(1.02);
+}
+
+.footer-col p {
+    color: #9ca3af !important; /* Use the same color as your bio or contact info */
+    opacity: 1;
+}
+
+/* Social links container */
+.social-links {
+    display: flex;
+    gap: 15px; /* Space between icons */
+    margin-top: 15px;
+}
+
+/* Fix for oversized social icons */
+.social-links a img {
+    width: 24px;  /* Set a fixed width */
+    height: 24px; /* Set a fixed height */
+    object-fit: contain; /* Ensure the icon isn't distorted */
+    transition: transform 0.3s ease; /* Smooth hover effect */
+}
+
+/* Hover effect to make it look "Luxury" */
+.social-links a img:hover {
+    transform: translateY(-3px); /* Slightly lift the icon on hover */
+    filter: brightness(1.2); /* Make it a bit brighter */
+}

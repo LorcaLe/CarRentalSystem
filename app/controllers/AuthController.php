@@ -1,88 +1,93 @@
 <?php
+// app/controllers/AuthController.php
 
 require_once __DIR__ . "/../models/User.php";
 
 class AuthController {
+    private $userModel;
 
-private $userModel;
+    public function __construct() {
+        $this->userModel = new User();
+    }
 
-public function __construct(){
+    /**
+     * Handle user login and role-based redirection
+     */
+    public function login() {
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $identifier = $_POST['identifier'];
+            $password = $_POST['password'];
 
-$this->userModel = new User();
+            $user = $this->userModel->login($identifier);
 
-}
+            // Verify password and check if user exists
+            if ($user && password_verify($password, $user['password'])) {
+                
+                // Set Session with role for RBAC
+                $_SESSION['user'] = [
+                    'id'    => $user['id'],
+                    'name'  => $user['name'],
+                    'email' => $user['email'],
+                    'role'  => $user['role'] // 'user', 'staff', or 'admin'
+                ];
 
-public function register(){
+                // Role-based redirection logic
+                switch ($user['role']) {
+                    case 'admin':
+                        header("Location: /car_rental/public/admin/dashboard");
+                        break;
+                    case 'staff':
+                        header("Location: /car_rental/public/staff/dashboard");
+                        break;
+                    default:
+                        header("Location: /car_rental/public/");
+                }
+                exit;
 
-if($_SERVER["REQUEST_METHOD"]=="POST"){
+            } else {
+                echo "Invalid login credentials";
+            }
+        } else {
+            require __DIR__ . "/../views/auth/login.php";
+        }
+    }
 
-$name = $_POST["name"];
-$identifier = $_POST["identifier"];
-$password = password_hash($_POST["password"],PASSWORD_DEFAULT);
+    /**
+     * Handle new user registration
+     */
+    public function register() {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $name = $_POST["name"];
+            $identifier = $_POST["identifier"];
+            // Password hashing for security
+            $password = $_POST["password"]; 
 
-$email = null;
-$phone = null;
+            $email = null;
+            $phone = null;
 
-if(filter_var($identifier,FILTER_VALIDATE_EMAIL)){
+            if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+                $email = $identifier;
+            } else {
+                $phone = $identifier;
+            }
 
-$email = $identifier;
+            // Default role 'user' is handled within User model or SQL default
+            $this->userModel->register($name, $email, $phone, $password);
 
-}else{
+            header("Location: /car_rental/public/login");
+        } else {
+            require __DIR__ . "/../views/auth/register.php";
+        }
+    }
 
-$phone = $identifier;
-
-}
-
-$this->userModel->register($name,$email,$phone,$password);
-
-header("Location: /car_rental/public/login");
-
-}else{
-
-require __DIR__."/../views/auth/register.php";
-
-}
-
-}
-
-
-public function login(){
-
-if($_SERVER['REQUEST_METHOD']=="POST"){
-
-$identifier = $_POST['identifier'];
-$password = $_POST['password'];
-
-$user = $this->userModel->login($identifier);
-
-if($user && password_verify($password,$user['password'])){
-
-$_SESSION['user'] = $user;
-
-header("Location: /car_rental/public/");
-exit;
-
-}else{
-
-echo "Invalid login";
-
-}
-
-}else{
-
-require __DIR__."/../views/auth/login.php";
-
-}
-
-}
-
-public function logout(){
-
-session_destroy();
-
-header("Location: /car_rental/public");
-
-}
+    /**
+     * Clear session and logout
+     */
+    public function logout() {
+        session_destroy();
+        header("Location: /car_rental/public");
+        exit;
+    }
 
 public function forgotPassword(){
 
@@ -278,4 +283,5 @@ $stmt->execute();
 echo "Password updated";
 
 }
+
 }
