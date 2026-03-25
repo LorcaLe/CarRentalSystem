@@ -37,7 +37,7 @@
 
     <div class="user-dropdown">
 
-    <a onclick="openProfile()">
+    <a href="/car_rental/public/profile">
     👤 My Profile</a>
 
     <a href="/car_rental/public/my_booking">

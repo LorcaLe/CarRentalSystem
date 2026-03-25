@@ -6,80 +6,160 @@ class VehicleController {
 
     private $vehicleModel;
 
-    public function __construct(){
+    public function __construct() {
         $this->vehicleModel = new Vehicle();
     }
 
-    /* Load trang chủ */
-    public function index(){
-        $cars = $this->vehicleModel->getAllCars();
-        require __DIR__ . "/../views/home/index.php";
-    }
+    // -------------------------------------------------------------------------
+    // Trang /cars — hiển thị danh sách xe có phân trang + bộ lọc sidebar
+    // -------------------------------------------------------------------------
 
-    /* Lấy chi tiết xe qua AJAX */
-    public function getCarDetail(){
-        $id = $_GET['id'] ?? null;
-        $car = $this->vehicleModel->getCarById($id);
-        echo json_encode($car);
-    }
+    public function index() {
+        $filters = $_GET;
+        $limit   = 12;
+        $page    = max(1, (int)($_GET['page'] ?? 1));
+        $offset  = ($page - 1) * $limit;
 
-    /* Tìm kiếm xe */
-    public function searchCars(){
-        $cars = $this->vehicleModel->search($_POST);
-        echo json_encode($cars);
-    }
+        $cars          = $this->vehicleModel->search($filters, $limit, $offset);
+        $totalFiltered = $this->vehicleModel->countFilteredCars($filters);
+        $totalPages    = (int)ceil($totalFiltered / $limit);
 
-    /**
-     * Hiển thị trang Form ký gửi xe cho User
-     */
-    public function showConsignmentForm() {
-        if (!isset($_SESSION['user'])) {
-            header("Location: /car_rental/public/login");
+        // Trả JSON khi gọi AJAX (filter sidebar hoặc phân trang)
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'cars'        => $cars,
+                'totalPages'  => $totalPages,
+                'currentPage' => $page,
+            ]);
             exit;
         }
+
+        $luxuryCars  = $this->vehicleModel->getLuxuryCars(8);
+        $popularCars = $this->vehicleModel->getPopularCars(8);
+
+        require_once __DIR__ . "/../views/home/index.php";
+    }
+
+    // -------------------------------------------------------------------------
+    // Endpoint AJAX cho bộ lọc sidebar (POST)
+    // -------------------------------------------------------------------------
+
+    public function searchCars() {
+        $filters = $_POST;
+        $limit   = 12;
+        $page    = max(1, (int)($filters['page'] ?? 1));
+        $offset  = ($page - 1) * $limit;
+
+        $cars          = $this->vehicleModel->search($filters, $limit, $offset);
+        $totalFiltered = $this->vehicleModel->countFilteredCars($filters);
+        $totalPages    = (int)ceil($totalFiltered / $limit);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'cars'        => $cars,
+            'totalPages'  => $totalPages,
+            'currentPage' => $page,
+        ]);
+        exit;
+    }
+
+    // -------------------------------------------------------------------------
+    // Search bar trang chủ — lọc theo location + ngày không bị trùng lịch
+    // -------------------------------------------------------------------------
+
+    public function searchBar() {
+        $location   = trim($_POST['location']    ?? '');
+        $pickupDate = trim($_POST['pickup_date']  ?? '');
+        $returnDate = trim($_POST['return_date']  ?? '');
+
+        // Validate: ngày pickup phải <= return
+        if (!empty($pickupDate) && !empty($returnDate) && $pickupDate > $returnDate) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Ngày trả phải sau ngày nhận xe.']);
+            exit;
+        }
+
+        $cars = $this->vehicleModel->searchBar($location, $pickupDate, $returnDate);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status'      => 'success',
+            'cars'        => $cars,
+            'pickup_date' => $pickupDate,
+            'return_date' => $returnDate,
+        ]);
+        exit;
+    }
+
+    // -------------------------------------------------------------------------
+    // Chi tiết xe qua AJAX
+    // -------------------------------------------------------------------------
+
+    public function getCarDetail() {
+        $id  = (int)($_GET['id'] ?? 0);
+        $car = $this->vehicleModel->getCarById($id);
+
+        header('Content-Type: application/json');
+        echo json_encode($car);
+        exit;
+    }
+
+    // -------------------------------------------------------------------------
+    // Ký gửi xe (User)
+    // -------------------------------------------------------------------------
+
+    public function showConsignmentForm() {
+        $this->requireLogin();
         require_once __DIR__ . "/../views/vehicle/register.php";
     }
 
-    /**
-     * Xử lý gửi yêu cầu ký gửi xe
-     */
     public function submitConsignment() {
+        $this->requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        $imageName  = time() . '_' . basename($_FILES['image']['name']);
+        $targetPath = __DIR__ . "/../../images/" . $imageName;
+
+        if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+            $error = "Không thể tải lên hình ảnh xe.";
+            require_once __DIR__ . "/../views/vehicle/register.php";
+            return;
+        }
+
+        $data = [
+            'owner_id'     => $_SESSION['user']['id'],
+            'name'         => $_POST['name'],
+            'branch'       => $_POST['branch'],
+            'price'        => (int)$_POST['price_per_day'],
+            'seats'        => (int)$_POST['seats'],
+            'transmission' => $_POST['transmission'],
+            'fuel_type'    => $_POST['fuel_type']    ?? 'Petrol',
+            'location'     => $_POST['location']     ?? 'Ho Chi Minh City',
+            'image'        => $imageName,
+            'status'       => 'Pending',
+        ];
+
+        if ($this->vehicleModel->register($data)) {
+            require_once __DIR__ . "/../views/vehicle/consignment_success.php";
+        } else {
+            $error = "Lỗi kết nối cơ sở dữ liệu!";
+            require_once __DIR__ . "/../views/vehicle/register.php";
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper
+    // -------------------------------------------------------------------------
+
+    private function requireLogin() {
         if (!isset($_SESSION['user'])) {
             header("Location: /car_rental/public/login");
             exit;
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            // 1. Xử lý Upload Ảnh
-            $imageName = time() . '_' . $_FILES['image']['name'];
-            $targetPath = __DIR__ . "/../../images/" . $imageName;
-
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
-                $data = [
-                    'owner_id'     => $_SESSION['user']['id'],
-                    'name'         => $_POST['name'],
-                    'branch'       => $_POST['branch'],
-                    'price'        => $_POST['price_per_day'],
-                    'seats'        => $_POST['seats'],
-                    'transmission' => $_POST['transmission'],
-                    'fuel_type'    => $_POST['fuel_type'] ?? 'Petrol',
-                    'location'     => $_POST['location'] ?? 'Ho Chi Minh City',
-                    'image'        => $imageName,
-                    'status'       => 'Pending'
-                ];
-
-                if ($this->vehicleModel->register($data)) {
-                    // THÔNG BÁO THÀNH CÔNG NGAY TẠI ĐÂY
-                    $message = "Yêu cầu ký gửi xe của bạn đã được gửi thành công!";
-                    // Bạn có thể require một file view thông báo hoặc hiển thị trong layout hiện tại
-                    require_once __DIR__ . "/../views/vehicle/consignment_success.php";
-                    exit;
-                } else {
-                    $error = "Lỗi kết nối cơ sở dữ liệu!";
-                }
-            } else {
-                $error = "Không thể tải lên hình ảnh xe.";
-            }
         }
     }
 }

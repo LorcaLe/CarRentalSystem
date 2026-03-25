@@ -115,7 +115,7 @@
         </a>
 
         <div class="mt-auto border-top border-secondary border-opacity-10 py-3">
-            <a class="nav-link text-danger" href="/car_rental/public/logout" onclick="return confirm('Logout now?')">
+            <a class="nav-link text-danger" href="/car_rental/public/logout" id="logoutBtn">
                 <i class="fas fa-sign-out-alt me-2"></i> Logout
             </a>
         </div>
@@ -270,6 +270,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Revenue Chart Logic
     const ctx = document.getElementById('revenueChart').getContext('2d');
@@ -314,12 +315,73 @@
     function updateRole(e, userId) {
         e.preventDefault();
         const role = document.getElementById('role_' + userId).value;
-        fetch('/car_rental/public/admin/update-role', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `user_id=${userId}&role=${role}`
-        }).then(() => location.reload());
+
+        // 1. Popup Hỏi xác nhận trước khi đổi quyền (Phòng ngừa bấm nhầm)
+        Swal.fire({
+            title: 'Change User Role?',
+            html: `Are you sure you want to change this user to <b class="text-primary">${role.toUpperCase()}</b>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3b82f6', // Màu xanh accent của bạn
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, Update'
+        }).then((result) => {
+            // Nếu Admin bấm "Yes, Update"
+            if (result.isConfirmed) {
+                
+                // 2. Popup Loading quay đều trong lúc chờ Server
+                Swal.fire({
+                    title: 'Updating...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading() }
+                });
+
+                // 3. Gửi lệnh lên Server
+                fetch('/car_rental/public/admin/update-role', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `user_id=${userId}&role=${role}`
+                })
+                .then(() => {
+                    // 4. Báo thành công chớp nhoáng (1.5 giây) rồi mới F5
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated Successfully!',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => location.reload());
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire('Error', 'Something went wrong!', 'error');
+                });
+            }
+        });
     }
+
+    // --- XỬ LÝ LOGOUT BẰNG SWEETALERT2 ---
+    document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+        e.preventDefault(); // Ngăn không cho trình duyệt chuyển trang ngay lập tức
+        const logoutUrl = this.href; // Lấy đường dẫn logout
+
+        Swal.fire({
+            title: 'Ready to leave?',
+            text: "You are about to log out of the Admin Dashboard.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545', // Màu đỏ giống theme Bootstrap
+            cancelButtonColor: '#6c757d', // Màu xám
+            confirmButtonText: 'Yes, Logout',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            // Nếu admin bấm "Yes, Logout", tiến hành chuyển trang
+            if (result.isConfirmed) {
+                window.location.href = logoutUrl;
+            }
+        });
+    });
 </script>
 
 </body>

@@ -1,121 +1,135 @@
 <?php
-// app/models/Booking.php
+
 require_once __DIR__ . "/../../config/database.php";
 
-
 class Booking {
+
     private $db;
 
     public function __construct() {
         $database = new Database();
-        $this->db = $database->conn; 
-        
+        $this->db = $database->conn;
+
         if ($this->db === null) {
             die("Database connection failed in Booking Model.");
         }
     }
 
-    /**
-     * Hàm lưu đơn hàng mới (Dành cho khách hàng)
-     */
+    // -------------------------------------------------------------------------
+    // CREATE
+    // -------------------------------------------------------------------------
+
     public function create($data) {
-        $sql = "INSERT INTO bookings (
-                    user_id, vehicle_id, pickup_location, 
-                    pickup_date, pickup_time, return_date, 
-                    return_time, total_price, status, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW())"; // Đổi ở đây thành Confirmed
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("iisssssd", 
-            $data['user_id'], $data['vehicle_id'], $data['pickup_location'],
-            $data['pickup_date'], $data['pickup_time'], $data['return_date'],
-            $data['return_time'], $data['total_price']
+        $stmt = $this->db->prepare(
+            "INSERT INTO bookings
+                (user_id, vehicle_id, pickup_location, pickup_date, pickup_time,
+                 return_date, return_time, total_price, status, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW())"
+        );
+        $stmt->bind_param(
+            "iisssssd",
+            $data['user_id'],
+            $data['vehicle_id'],
+            $data['pickup_location'],
+            $data['pickup_date'],
+            $data['pickup_time'],
+            $data['return_date'],
+            $data['return_time'],
+            $data['total_price']
         );
         return $stmt->execute();
     }
 
-    /**
-     * Hàm lấy danh sách đơn hàng cho Admin
-     */
+    // -------------------------------------------------------------------------
+    // READ
+    // -------------------------------------------------------------------------
+
     public function getAllBookings($limit = null) {
-        $sql = "SELECT b.*, u.name as customer_name, v.name as car_name 
+        $sql = "SELECT b.*, u.name AS customer_name, v.name AS car_name
                 FROM bookings b
                 JOIN users u ON b.user_id = u.id
                 JOIN vehicles v ON b.vehicle_id = v.id
                 ORDER BY b.created_at DESC";
-        
+
         if ($limit) {
             $sql .= " LIMIT " . (int)$limit;
         }
 
         $result = $this->db->query($sql);
-        
-        if ($result) {
-            return $result->fetch_all(MYSQLI_ASSOC);
-        }
-        return [];
+        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    /**
-     * Lấy lịch sử đặt xe của 1 khách hàng cụ thể
-     */
     public function getBookingsByUser($user_id) {
-        $sql = "SELECT b.*, v.name as car_name, v.image as car_image 
-                FROM bookings b
-                JOIN vehicles v ON b.vehicle_id = v.id
-                WHERE b.user_id = ? 
-                ORDER BY b.created_at DESC";
-                
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare(
+            "SELECT b.*, v.name AS car_name, v.image AS car_image
+             FROM bookings b
+             JOIN vehicles v ON b.vehicle_id = v.id
+             WHERE b.user_id = ?
+             ORDER BY b.created_at DESC"
+        );
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     /**
-     * Tính tổng doanh thu (Chỉ tính những đơn đã Confirmed)
+     * Trả về các khoảng ngày đã bị đặt (không kể Cancelled) của một xe.
+     * Dùng cho API getBookedDates() ở BookingController → datepicker front-end.
      */
+    public function getActiveBookingDates($vehicle_id) {
+        $stmt = $this->db->prepare(
+            "SELECT pickup_date, return_date
+             FROM bookings
+             WHERE vehicle_id = ?
+             AND status NOT IN ('Cancelled')"
+        );
+        $stmt->bind_param("i", $vehicle_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // -------------------------------------------------------------------------
+    // STATS (dùng cho Admin dashboard)
+    // -------------------------------------------------------------------------
+
     public function getTotalRevenue() {
-        $sql = "SELECT SUM(total_price) as total FROM bookings WHERE status = 'Confirmed'";
-        $result = $this->db->query($sql);
-        $row = $result->fetch_assoc();
-        return $row['total'] ?? 0;
+        $result = $this->db->query(
+            "SELECT SUM(total_price) AS total FROM bookings WHERE status = 'Confirmed'"
+        );
+        return $result->fetch_assoc()['total'] ?? 0;
     }
 
-    /**
-     * Đếm tổng số lượng đơn hàng
-     */
     public function getTotalBookings() {
-        $sql = "SELECT COUNT(*) as total FROM bookings";
-        $result = $this->db->query($sql);
-        $row = $result->fetch_assoc();
-        return $row['total'] ?? 0;
+        $result = $this->db->query("SELECT COUNT(*) AS total FROM bookings");
+        return $result->fetch_assoc()['total'] ?? 0;
     }
 
-    /**
-     * Cập nhật trạng thái đơn hàng (Confirm/Cancel)
-     */
+    // -------------------------------------------------------------------------
+    // UPDATE
+    // -------------------------------------------------------------------------
+
     public function updateStatus($id, $status) {
-        $sql = "UPDATE bookings SET status = ? WHERE id = ?";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare("UPDATE bookings SET status = ? WHERE id = ?");
         $stmt->bind_param("si", $status, $id);
         return $stmt->execute();
     }
 
+    // -------------------------------------------------------------------------
+    // AVAILABILITY CHECK
+    // -------------------------------------------------------------------------
+
+    /**
+     * Trả về true nếu xe chưa có đơn nào trùng khoảng thời gian.
+     */
     public function isVehicleAvailable($vehicle_id, $pickup_date, $return_date) {
-        $sql = "SELECT COUNT(*) as count FROM bookings 
-                WHERE vehicle_id = ? 
-                AND status != 'Cancelled' 
-                AND NOT (return_date < ? OR pickup_date > ?)";
-        
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(*) AS count FROM bookings
+             WHERE vehicle_id = ?
+             AND status != 'Cancelled'
+             AND NOT (return_date < ? OR pickup_date > ?)"
+        );
         $stmt->bind_param("iss", $vehicle_id, $pickup_date, $return_date);
         $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
-        
-        // Nếu count > 0 nghĩa là có ít nhất 1 đơn đặt trùng lịch
-        return $result['count'] == 0;
+        return $stmt->get_result()->fetch_assoc()['count'] == 0;
     }
 }
-

@@ -3,294 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <title>Support Center - Luxury Car Rental</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/car_rental/assets/css/style.css">
-    <link rel="stylesheet" href="/car_rental/assets/css/layout.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f4f7fa; color: #333; }
+        :root { --primary: #0084ff; --bg-main: #f0f2f5; --sidebar-w: 350px; }
+        body { background: var(--bg-main); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 
-        .support-container {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 0 20px;
-            min-height: 70vh;
+        .support-wrapper { display: flex; height: 100vh; }
+        
+        /* SIDEBAR */
+        .ticket-sidebar { 
+            width: var(--sidebar-w); 
+            background: white; 
+            border-right: 1px solid #e2e8f0; 
+            display: flex; 
+            flex-direction: column;
+        }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #f1f5f9; }
+        .ticket-list { flex: 1; overflow-y: auto; }
+        .ticket-item { 
+            padding: 18px 20px; border-bottom: 1px solid #f8fafc; 
+            cursor: pointer; transition: 0.2s; border-left: 4px solid transparent;
+        }
+        .ticket-item:hover { background: #f8fafc; }
+        .ticket-item.active { background: #eff6ff; border-left-color: var(--primary); }
+
+        /* CHAT AREA & EMPTY STATE */
+        .chat-area { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            background: white; 
+            position: relative; 
         }
 
-        /* HEADER STYLES */
-        .support-header {
+        .empty-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa chiều dọc */
+            align-items: center;    /* Căn giữa chiều ngang */
+            text-align: center;
+            color: #8e9196;
+            background: #ffffff;
+        }
+
+        /* MESSENGER BUBBLES */
+        .chat-messages { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px 25px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; /* Khoảng cách hẹp chuẩn Messenger */
+            background: white;
+        }
+
+        .bubble { 
+            max-width: 65%; 
+            padding: 10px 16px; 
+            font-size: 15px; 
+            line-height: 1.4; 
+            position: relative;
+        }
+        
+        /* Của người dùng (Xanh) */
+        .bubble-user { 
+            align-self: flex-end; 
+            background: var(--primary); 
+            color: white; 
+            border-radius: 18px 18px 4px 18px; 
+        }
+        
+        /* Của Admin (Xám) */
+        .bubble-admin { 
+            align-self: flex-start; 
+            background: #f0f2f5; 
+            color: #050505; 
+            border-radius: 18px 18px 18px 4px; 
+        }
+
+        /* 40% HEIGHT FOOTER (GMAIL + MESSENGER STYLE) */
+        .chat-footer {
+            flex: 0 0 40%; /* Chiếm 40% chiều cao như yêu cầu */
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 15px 25px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05); /* Nhô lên nhẹ */
+            border-top: 1px solid #edf2f7;
+            z-index: 10;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f0f2f5; 
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .input-wrapper:focus-within {
+            background: #ffffff;
+            border: 1px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.1);
+        }
+
+        #replyMsg {
+            width: 100%;
+            height: 100%;
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            resize: none;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #1c1e21;
+        }
+
+        .chat-actions {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 40px;
+            align-items: center;
         }
-        .support-header h2 { font-size: 32px; font-weight: 700; color: #1a1a1a; margin: 0; }
 
-        /* BUTTONS */
-        .btn-round { border-radius: 50px; font-weight: 600; transition: all 0.3s ease; padding: 10px 25px; }
-        .btn-new-ticket {
-            background-color: #007bff; color: white; border: none;
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-        }
-        .btn-new-ticket:hover {
-            background-color: #0056b3; transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+        .btn-send-mes {
+            background: var(--primary);
             color: white;
-        }
-
-        /* TICKET CARD & HOVER EFFECT */
-        .ticket-card {
             border: none;
-            border-radius: 20px;
-            background: #ffffff;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            border: 1px solid transparent;
-            margin-bottom: 1.5rem;
-        }
-        /* Hiệu ứng Hover xịn xò */
-        .ticket-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
-            border-color: #007bff;
+            padding: 8px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.2s;
         }
 
-        /* STATUS BADGES */
-        .status-badge {
-            padding: 6px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 50px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .bg-open { background-color: #e7f3ff; color: #0084ff; }
-        .bg-closed { background-color: #f0f2f5; color: #65676b; }
-
-        /* EMPTY STATE */
-        .empty-state {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 80px 40px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-        }
-        .empty-state img { width: 120px; margin-bottom: 25px; opacity: 0.5; filter: grayscale(1); }
-
-        /* MODAL FIX */
-        .modal-content { border-radius: 24px; overflow: hidden; }
-        .form-control-custom {
-            background-color: #f8f9fa; border: none; border-radius: 12px; padding: 15px;
+        .btn-send-mes:hover {
+            background: #0073e6;
+            transform: translateY(-1px);
         }
     </style>
 </head>
 <body>
 
-<?php require_once __DIR__ . "/../layouts/header.php"; ?>
-
-<div class="support-container">
-    <div class="support-header">
-        <div>
-            <h2>Support Tickets</h2>
-            <p class="text-muted m-0">Manage your inquiries and support requests</p>
+<div class="support-wrapper">
+    <aside class="ticket-sidebar shadow-sm">
+        <div class="sidebar-header">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0"><i class="fas fa-headset me-2 text-primary"></i>Support</h5>
+                <a href="/car_rental/public/" class="btn btn-sm btn-light rounded-circle"><i class="fas fa-home"></i></a>
+            </div>
+            <button class="btn btn-primary w-100 btn-round py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#newTicketModal">
+                <i class="fas fa-plus me-2"></i>New Ticket
+            </button>
         </div>
-        <button class="btn-round btn-new-ticket" data-bs-toggle="modal" data-bs-target="#newTicketModal">
-            <i class="fas fa-plus me-2"></i>New Ticket
-        </button>
-    </div>
 
-    <div class="row">
-        <?php 
-        $hasTicket = false;
-        foreach($tickets as $t): 
-            if(!empty($t['ticket_id'])): 
-                $hasTicket = true;
-        ?>
-            <div class="col-12">
-                <div class="card ticket-card shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="d-flex align-items-center gap-3 mb-3">
-                                    <span class="status-badge <?= $t['ticket_status'] == 'Closed' ? 'bg-closed' : 'bg-open' ?>">
-                                        <?= $t['ticket_status'] ?>
-                                    </span>
-                                    <span class="text-muted small fw-bold">#<?= htmlspecialchars($t['ticket_id']) ?></span>
-                                </div>
-                                <h5 class="fw-bold text-dark mb-2"><?= htmlspecialchars($t['subject'] ?? 'General Support') ?></h5>
-                                <div class="text-muted small">
-                                    <i class="far fa-calendar-alt me-1"></i> <?= date('d M, Y • H:i', strtotime($t['created_at'])) ?>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                                <button onclick="viewTicket(<?= $t['id'] ?>)" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#viewTicketModal" 
-                                        class="btn btn-sm btn-light border btn-round me-2">
-                                    View Detail
-                                </button>
-                                <?php if($t['ticket_status'] != 'Closed'): ?>
-                                    <button class="btn btn-outline-danger btn-round" onclick="endTicket(<?= $t['id'] ?>)">
-                                        End Ticket
-                                    </button>
-                                <?php endif; ?>
-                            </div>
+        <div class="ticket-list">
+            <?php if (!empty($tickets)): ?>
+                <?php foreach($tickets as $t): ?>
+                    <div class="ticket-item" onclick="loadUserChat(<?= $t['id'] ?>, this)">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-primary fw-bold">#<?= $t['ticket_id'] ?></small>
+                            <span class="badge rounded-pill <?= $t['ticket_status'] == 'Closed' ? 'bg-secondary' : 'bg-success' ?>" style="font-size: 9px;">
+                                <?= $t['ticket_status'] ?>
+                            </span>
                         </div>
+                        <div class="text-dark small fw-bold text-truncate"><?= htmlspecialchars($t['subject']) ?></div>
+                        <div class="text-muted" style="font-size: 11px;"><?= date('d M, Y', strtotime($t['created_at'])) ?></div>
                     </div>
-                </div>
-            </div>
-        <?php 
-            endif;
-        endforeach; 
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="p-5 text-center text-muted small">No tickets yet.</div>
+            <?php endif; ?>
+        </div>
+    </aside>
 
-        if(!$hasTicket): ?>
-            <div class="col-12">
-                <div class="empty-state">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6598/6598519.png" alt="No Tickets">
-                    <h4>No Active Tickets</h4>
-                    <p>You don't have any support tickets yet. Click "New Ticket" to get started with our support team.</p>
+    <main class="chat-area">
+        <div id="chatDefault" class="empty-chat">
+            <div class="mb-3">
+                <i class="fab fa-facebook-messenger fa-4x opacity-25"></i>
+            </div>
+            <h5 class="fw-bold text-dark">Your Conversations</h5>
+            <p class="small text-muted">Select a conversation to view details</p>
+        </div>
+
+        <div id="chatContent" style="display: none; flex-direction: column; height: 100%;">
+            <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold m-0 text-primary" id="chatSubject">Subject</h6>
+                    <small class="text-muted" id="chatStatus">Status: Open</small>
+                </div>
+                <button class="btn btn-sm btn-outline-danger btn-round" id="endTicketBtn" onclick="closeTicketByUser()">End Conversation</button>
+            </div>
+            
+            <div class="chat-messages" id="chatFlow"></div>
+
+            <div class="chat-footer">
+                <div class="input-wrapper">
+                    <textarea id="replyMsg" placeholder="Type your message here..."></textarea>
+                </div>
+                <div class="chat-actions">
+                    <small class="text-muted">Use <b>Ctrl + Enter</b> to send quickly.</small>
+                    <button class="btn-send-mes shadow-sm" onclick="sendUserReply()">
+                        Send Message <i class="fas fa-paper-plane ms-2"></i>
+                    </button>
                 </div>
             </div>
-        <?php endif; ?>
-    </div>
+        </div>
+    </main>
 </div>
 
 <div class="modal fade" id="newTicketModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 p-4 pb-0">
-                <h5 class="fw-bold">Create New Ticket</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="fw-bold">Create New Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="/car_rental/public/ticket/create" method="POST">
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Subject</label>
-                        <input type="text" name="subject" class="form-control form-control-custom" placeholder="Briefly describe the issue" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Detailed Message</label>
-                        <textarea name="message" class="form-control form-control-custom" rows="4" placeholder="How can we help you today?" required></textarea>
-                    </div>
+                    <input type="text" name="subject" class="form-control mb-3 p-3 bg-light border-0" placeholder="Subject" style="border-radius:12px" required>
+                    <textarea name="message" class="form-control p-3 bg-light border-0" rows="4" placeholder="How can we help?" style="border-radius:12px" required></textarea>
                 </div>
                 <div class="modal-footer border-0 p-4 pt-0">
-                    <button type="button" class="btn btn-light btn-round px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-round px-5 shadow-sm">Send Ticket</button>
+                    <button type="submit" class="btn btn-primary w-100 btn-round py-2 shadow-sm">Send Request</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="viewTicketModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header border-0 p-4 pb-0">
-                <h5 class="fw-bold" id="modalTicketID">Ticket Detail</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div id="ticketChatFlow" style="height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 15px; margin-bottom: 15px;">
-                    </div>
-
-                <div id="replyArea">
-                    <div class="d-flex gap-2">
-                        <input type="text" id="replyInput" class="form-control border-0 bg-light p-3" style="border-radius: 12px;" placeholder="Type your reply...">
-                        <button onclick="sendReply()" class="btn btn-primary btn-round px-4">Send</button>
-                    </div>
-                </div>
-                <div id="closedNotice" class="text-center text-muted small" style="display:none;">
-                    This ticket is closed. Please create a new one if you need further help.
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<?php require_once __DIR__ . "/../layouts/footer.php"; ?>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-function endTicket(id) {
-    if(confirm('Are you sure you want to end this ticket? This action cannot be undone.')) {
-        fetch('/car_rental/public/ticket/close', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'id=' + id
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) location.reload();
-        });
-    }
-}
+let activeId = null;
 
-let currentTicketId = null;
-
-function viewTicket(id) {
-    currentTicketId = id; 
-    const chatFlow = document.getElementById('ticketChatFlow');
-    chatFlow.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
+function loadUserChat(id, el) {
+    activeId = id;
+    document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    
+    document.getElementById('chatDefault').style.display = 'none';
+    document.getElementById('chatContent').style.display = 'flex';
 
     fetch(`/car_rental/public/ticket/view?id=${id}`)
     .then(res => res.json())
     .then(data => {
         if(!data.success) return;
+        document.getElementById('chatSubject').innerText = data.info.subject;
+        document.getElementById('chatStatus').innerText = "Ticket: #" + data.info.ticket_id + " | Status: " + data.info.ticket_status;
 
-        document.getElementById('modalTicketID').innerText = "Ticket #" + data.info.ticket_id;
-        
         let html = '';
-        // Vẽ tin nhắn gốc
-        if(data.info.message) {
-            html += `<div style="align-self: flex-end; background: #0084ff; color: white; padding: 10px 15px; border-radius: 18px 18px 4px 18px; max-width: 85%; margin-bottom: 5px; font-size: 14px;">${data.info.message}</div>`;
-        }
+        data.replies.forEach(m => {
+            const isMe = (m.sender_type === 'User');
+            // Cập nhật cấu trúc bong bóng Messenger
+            html += `
+                <div class="bubble ${isMe ? 'bubble-user' : 'bubble-admin'}">
+                    ${!isMe ? '<b style="font-size:11px;">Support Team</b><br>' : ''}${m.message}
+                    <div style="font-size: 9px; opacity: 0.7; margin-top:5px; text-align: ${isMe ? 'right' : 'left'}">${m.created_at}</div>
+                </div>`;
+        });
+        const flow = document.getElementById('chatFlow');
+        flow.innerHTML = html;
+        setTimeout(() => { flow.scrollTop = flow.scrollHeight; }, 100);
 
-        // Vẽ các tin nhắn phản hồi
-        if (data.replies && data.replies.length > 0) {
-            data.replies.forEach(m => {
-                const isAdmin = (m.sender_type === 'Admin');
-                html += `<div style="align-self: ${isAdmin ? 'flex-start' : 'flex-end'}; background: ${isAdmin ? '#e4e6eb' : '#0084ff'}; color: ${isAdmin ? '#050505' : 'white'}; padding: 10px 15px; border-radius: 18px; margin-bottom: 5px; font-size: 14px; max-width: 85%;">${m.message}</div>`;
-            });
-        }
-
-        chatFlow.innerHTML = html;
-        setTimeout(() => { chatFlow.scrollTop = chatFlow.scrollHeight; }, 100);
-        
-        // Cập nhật trạng thái đóng/mở
-        const isClosed = data.info.ticket_status === 'Closed';
-        document.getElementById('replyArea').style.display = isClosed ? 'none' : 'block';
-        document.getElementById('closedNotice').style.display = isClosed ? 'block' : 'none';
-
-        // TUYỆT ĐỐI KHÔNG DÙNG DÒNG NÀY NỮA:
-        // new bootstrap.Modal(document.getElementById('viewTicketModal')).show(); 
+        const closed = data.info.ticket_status === 'Closed';
+        document.getElementById('replyMsg').disabled = closed;
+        document.getElementById('endTicketBtn').style.display = closed ? 'none' : 'block';
     });
 }
 
-function sendReply() {
-    const input = document.getElementById('replyInput');
-    const message = input.value.trim();
-    
-    if (!message || !currentTicketId) {
-        console.error("Missing ID or Message. ID:", currentTicketId);
-        return;
-    }
+function sendUserReply() {
+    const msg = document.getElementById('replyMsg').value.trim();
+    if(!msg || !activeId) return;
 
     fetch('/car_rental/public/ticket/reply', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `ticket_row_id=${currentTicketId}&message=${encodeURIComponent(message)}`
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `ticket_row_id=${activeId}&message=${encodeURIComponent(msg)}`
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            input.value = '';
-            // Gọi lại hàm viewTicket(id) để load lại tin nhắn mà không cần tắt Modal
-            viewTicket(currentTicketId); 
-        } else {
-            alert("Error: " + data.message);
+        if(data.success) {
+            document.getElementById('replyMsg').value = '';
+            loadUserChat(activeId, document.querySelector('.ticket-item.active'));
         }
     });
 }
+
+function closeTicketByUser() {
+    Swal.fire({
+        title: 'End Conversation?', text: "You won't be able to reply anymore.",
+        icon: 'warning', showCancelButton: true, confirmButtonColor: '#0084ff', confirmButtonText: 'Yes, End it'
+    }).then((r) => {
+        if(r.isConfirmed) {
+            fetch('/car_rental/public/ticket/close', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'id=' + activeId
+            }).then(() => location.reload());
+        }
+    });
+}
+
+document.getElementById('replyMsg').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') sendUserReply();
+});
 </script>
 </body>
 </html>

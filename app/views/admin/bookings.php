@@ -105,8 +105,17 @@
             <i class="fas fa-envelope me-2"></i> Enquiries
         </a>
 
+        <a class="nav-link d-flex justify-content-between align-items-center <?= strpos($current_uri, '/admin/tickets') !== false ? 'active' : '' ?>" href="/car_rental/public/admin/tickets">
+            <span><i class="fas fa-ticket-alt me-2"></i> Support Tickets</span>
+            <?php if (isset($data['openTickets']) && $data['openTickets'] > 0): ?>
+                <span class="badge bg-primary rounded-pill shadow-sm" style="font-size: 0.7rem; padding: 0.4em 0.65em;">
+                    <?= $data['openTickets'] ?>
+                </span>
+            <?php endif; ?>
+        </a>
+
         <div class="mt-auto border-top border-secondary border-opacity-10 py-3">
-            <a class="nav-link text-danger" href="/car_rental/public/logout" onclick="return confirm('Logout now?')">
+            <a class="nav-link text-danger" href="/car_rental/public/logout" id="logoutBtn">
                 <i class="fas fa-sign-out-alt me-2"></i> Logout
             </a>
         </div>
@@ -150,10 +159,8 @@
                             </td>
                             <td class="text-center">
                                 <?php if($b['status'] != 'Cancelled'): ?>
-                                    <a href="/car_rental/public/admin/cancel-booking?id=<?= $b['id'] ?>" 
-                                    class="btn btn-sm btn-outline-danger shadow-sm"
-                                    onclick="return confirm('Are you sure you want to cancel this booking?')">
-                                    Cancel Booking
+                                    <a href="javascript:void(0)" onclick="cancelBooking(<?= $b['id'] ?>)" class="btn btn-sm btn-outline-danger shadow-sm">
+                                        Cancel Booking
                                     </a>
                                 <?php else: ?>
                                     <span class="text-muted small">No actions available</span>
@@ -170,4 +177,25 @@
 </div>
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        const logoutUrl = this.href;
+        Swal.fire({
+            title: 'Ready to leave?', text: "You are about to log out of the Admin Dashboard.",
+            icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545',
+            confirmButtonText: 'Yes, Logout'
+        }).then((result) => { if (result.isConfirmed) window.location.href = logoutUrl; });
+    });
+
+    function cancelBooking(id) {
+        Swal.fire({
+            title: 'Cancel Booking?', text: "This action cannot be undone!",
+            icon: 'error', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Yes, Cancel it'
+        }).then((result) => {
+            if (result.isConfirmed) window.location.href = `/car_rental/public/admin/cancel-booking?id=${id}`;
+        });
+    }
+</script>
 </html>

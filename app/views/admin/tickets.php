@@ -17,6 +17,72 @@
         .bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 14px; position: relative; }
         .bubble-admin { align-self: flex-end; background: #3b82f6; color: white; border-bottom-right-radius: 4px; }
         .bubble-user { align-self: flex-start; background: white; color: #1e293b; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .col-md-8.col-lg-9 {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 0 0 60%;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Tăng khoảng cách giữa các bong bóng cho thoáng */
+            background: #f8fafc;
+            /* Đảm bảo phần này luôn chiếm ít nhất 60-70% màn hình */
+            min-height: 400px; 
+        }
+
+        /* Tối ưu lại phần footer để nó gọn gàng hơn */
+        /* Footer linh hoạt chiều cao */
+        .chat-footer {
+            flex: 0 0 40%;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 1px solid #e2e8f0;
+        }
+
+        #adminReplyMsg {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            
+            /* 1. KHÔNG cho phép người dùng kéo dãn bằng tay gây vỡ layout */
+            resize: none !important; 
+            
+            /* 2. CHỈNH ĐỘ CAO: 160px là khoảng cách vừa đủ cho 5-6 dòng chữ */
+            min-height: 160px; 
+            
+            /* 3.typography: Giữ font 15px và line-height 1.6 để nhìn chuyên nghiệp như Gmail */
+            font-size: 15px;
+            line-height: 1.6;
+            color: #1e293b;
+            width: 100%;
+            padding: 5px;
+        }
+
+        /* Đảm bảo khung bao dãn ra để chứa ô nhập 160px này */
+        .input-wrapper {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper:focus-within {
+            background: white;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+        }
     </style>
 </head>
 <body>
@@ -69,17 +135,24 @@
                 <div class="chat-messages" id="adminChatMessages">
                     </div>
 
-                <div class="p-3 bg-white border-top">
-                    <div class="input-group">
-                        <input type="text" id="adminReplyMsg" class="form-control border-0 bg-light" placeholder="Type your response...">
-                        <button class="btn btn-primary px-4" onclick="sendAdminReply()">Send</button>
+                <div class="chat-footer">
+                    <div class="input-wrapper mb-3">
+                        <textarea id="adminReplyMsg" class="form-control" 
+                                placeholder="Type your detailed response here (Press Shift+Enter for new line)..."
+                                rows="5"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Tip: Use <b>Shift + Enter</b> for new lines.</small>
+                        <button class="btn btn-primary px-5 py-2 fw-bold shadow-sm" onclick="sendAdminReply()">
+                            <i class="fas fa-paper-plane me-2"></i> Send Response
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 let currentTicketId = null;
 
@@ -138,9 +211,22 @@ function loadAdminChat(id, element) {
     });
 }
 
+// Hàm bắt sự kiện nhấn phím Enter
+document.getElementById('replyMsg').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') sendUserReply();
+});
+
+// Cập nhật lại hàm sendAdminReply để nút bấm mượt hơn
 function sendAdminReply() {
-    const msg = document.getElementById('adminReplyMsg').value.trim();
+    const inputField = document.getElementById('adminReplyMsg');
+    const msg = inputField.value.trim();
     if(!msg || !currentTicketId) return;
+
+    // Hiển thị loading nhẹ trên nút
+    const sendBtn = document.querySelector('.chat-footer .btn-primary');
+    const originalText = sendBtn.innerHTML;
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
     fetch('/car_rental/public/admin/ticket/reply', {
         method: 'POST',
@@ -149,8 +235,10 @@ function sendAdminReply() {
     })
     .then(res => res.json())
     .then(data => {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = originalText;
         if(data.success) {
-            document.getElementById('adminReplyMsg').value = '';
+            inputField.value = '';
             loadAdminChat(currentTicketId, document.querySelector('.ticket-item.active'));
         }
     });
@@ -158,17 +246,26 @@ function sendAdminReply() {
 
 function endTicketAdmin() {
     if(!currentTicketId) return;
-    if(confirm('Are you sure you want to close this ticket?')) {
-        fetch('/car_rental/public/ticket/close', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'id=' + currentTicketId
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) location.reload(); // Reload để cập nhật badge status
-        });
-    }
+    
+    Swal.fire({
+        title: 'Close Ticket?', text: "Customer will not be able to reply to this ticket anymore.",
+        icon: 'warning', showCancelButton: true, confirmButtonColor: '#3b82f6', confirmButtonText: 'Yes, Close it'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/car_rental/public/ticket/close', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'id=' + currentTicketId
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    Swal.fire('Closed!', 'Ticket has been closed successfully.', 'success')
+                    .then(() => location.reload());
+                }
+            });
+        }
+    });
 }
 </script>
 </body>

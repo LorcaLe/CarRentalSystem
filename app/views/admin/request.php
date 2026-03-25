@@ -104,9 +104,18 @@
         <a class="nav-link <?= strpos($current_uri, '/admin/enquiries') !== false ? 'active' : '' ?>" href="/car_rental/public/admin/enquiries">
             <i class="fas fa-envelope me-2"></i> Enquiries
         </a>
+        
+        <a class="nav-link d-flex justify-content-between align-items-center <?= strpos($current_uri, '/admin/tickets') !== false ? 'active' : '' ?>" href="/car_rental/public/admin/tickets">
+            <span><i class="fas fa-ticket-alt me-2"></i> Support Tickets</span>
+            <?php if (isset($data['openTickets']) && $data['openTickets'] > 0): ?>
+                <span class="badge bg-primary rounded-pill shadow-sm" style="font-size: 0.7rem; padding: 0.4em 0.65em;">
+                    <?= $data['openTickets'] ?>
+                </span>
+            <?php endif; ?>
+        </a>
 
         <div class="mt-auto border-top border-secondary border-opacity-10 py-3">
-            <a class="nav-link text-danger" href="/car_rental/public/logout" onclick="return confirm('Logout now?')">
+            <a class="nav-link text-danger" href="/car_rental/public/logout" id="logoutBtn">
                 <i class="fas fa-sign-out-alt me-2"></i> Logout
             </a>
         </div>
@@ -154,16 +163,8 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group shadow-sm">
-                                        <a href="/car_rental/public/admin/approve-car?id=<?= $car['id'] ?>" 
-                                           class="btn btn-sm btn-success px-3" 
-                                           onclick="return confirm('Approve this vehicle for rent?')">
-                                           Approve
-                                        </a>
-                                        <a href="/car_rental/public/admin/reject-car?id=<?= $car['id'] ?>" 
-                                           class="btn btn-sm btn-outline-danger" 
-                                           onclick="return confirm('Reject this request?')">
-                                           Reject
-                                        </a>
+                                        <a href="javascript:void(0)" onclick="approveCar(<?= $car['id'] ?>)" class="btn btn-sm btn-success px-3">Approve</a>
+                                        <a href="javascript:void(0)" onclick="rejectCar(<?= $car['id'] ?>)" class="btn btn-sm btn-outline-danger">Reject</a>    
                                     </div>
                                 </td>
                             </tr>
@@ -182,7 +183,35 @@
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        const logoutUrl = this.href;
+        Swal.fire({
+            title: 'Ready to leave?', text: "You are about to log out of the Admin Dashboard.",
+            icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545',
+            confirmButtonText: 'Yes, Logout'
+        }).then((result) => { if (result.isConfirmed) window.location.href = logoutUrl; });
+    });
+
+    function approveCar(id) {
+        Swal.fire({
+            title: 'Approve Vehicle?', text: "This vehicle will be available for rent on the main page.",
+            icon: 'success', showCancelButton: true, confirmButtonColor: '#10b981', confirmButtonText: 'Yes, Approve'
+        }).then((result) => {
+            if (result.isConfirmed) window.location.href = `/car_rental/public/admin/approve-car?id=${id}`;
+        });
+    }
+
+    function rejectCar(id) {
+        Swal.fire({
+            title: 'Reject Request?', text: "This request will be declined.",
+            icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Yes, Reject'
+        }).then((result) => {
+            if (result.isConfirmed) window.location.href = `/car_rental/public/admin/reject-car?id=${id}`;
+        });
+    }
+</script>
 </html>

@@ -166,6 +166,42 @@ padding:10px;
 margin-right:10px;
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.badge-hot {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ff4d4d;
+    color: white;
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* Hiệu ứng xe sang */
+.luxury-border {
+    border: 1px solid #ffd700;
+}
+.luxury-text {
+    color: #b8860b;
+    font-weight: bold;
+}
+
 /* MAIN LAYOUT */
 
 .car-layout{
@@ -194,9 +230,9 @@ box-shadow:0 6px 18px rgba(0,0,0,0.1);
 
 position:sticky;
 
-top:120px;
+top:30px;
 
-height:calc(100vh - 140px);
+height:calc(110vh - 140px);
 
 overflow-y: auto;
 
@@ -216,6 +252,13 @@ padding-right: 10px;
 .filter::-webkit-scrollbar-thumb:hover{
   background:#999;
 }
+
+.main-container {
+    max-width: 1400px; /* Độ rộng tối đa của nội dung (giống Shopee/BonbonCar) */
+    margin: 0 auto;    /* Căn giữa toàn bộ khối này, tạo ra 2 khoảng trắng 2 bên */
+    padding: 0 20px;   /* Khoảng cách an toàn khi thu nhỏ màn hình điện thoại */
+}
+
 /* VEHICLE GRID */
 .car-layout{
 
@@ -1326,4 +1369,94 @@ transition:.2s;
 
 background:#1d4ed8;
 
+}
+
+/* Container Swiper: Thêm padding ngang để chừa chỗ cho nút bấm */
+/* Đảm bảo Swiper có khung hình chuẩn */
+.swiper {
+    width: 100%;
+    padding-bottom: 30px; /* Tạo không gian cho nút/phân trang */
+}
+
+/* Ép ảnh xe thu nhỏ đúng kích thước card */
+.swiper-slide img {
+    width: 100% !important;
+    height: 200px !important;
+    object-fit: cover;
+}
+
+/* Đưa nút bấm lên lớp trên cùng để có thể click */
+.swiper-button-next, .swiper-button-prev {
+    z-index: 999 !important;
+    color: #007bff !important; /* Đổi màu xanh cho nổi bật */
+}
+
+/* Tinh chỉnh nút bấm: Nhỏ, trắng, bo tròn và bóng đổ nhẹ */
+.swiper-button-next, .swiper-button-prev {
+    width: 35px !important;
+    height: 35px !important;
+    background-color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+/* Đưa nút ra mép ngoài */
+.swiper-button-prev {
+    left: 5px !important;
+}
+.swiper-button-next {
+    right: 5px !important;
+}
+
+/* Thu nhỏ mũi tên bên trong nút */
+.swiper-button-next:after, .swiper-button-prev:after {
+    font-size: 14px !important;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Hiệu ứng khi di chuột vào nút */
+.swiper-button-next:hover, .swiper-button-prev:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.swiper-button-next:hover:after, .swiper-button-prev:hover:after {
+    color: #fff;
+}
+
+/* Ẩn nút khi ở đầu hoặc cuối danh sách (tinh tế hơn) */
+.swiper-button-disabled {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+.page-link {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.page-link.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.page-link:hover:not(.active) {
+    background-color: #f1f1f1;
+    border-color: #ccc;
 }

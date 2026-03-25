@@ -1,9 +1,7 @@
 <?php
-// public/index.php
 
 session_start();
 
-// Import tất cả Controller
 require_once "app/controllers/AuthController.php";
 require_once "app/controllers/VehicleController.php";
 require_once "app/controllers/BookingController.php";
@@ -12,13 +10,16 @@ require_once "app/controllers/PaymentController.php";
 require_once "app/controllers/AdminController.php";
 require_once "app/controllers/StaffController.php";
 
-// Xử lý URL
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = str_replace("/car_rental/public", "", $uri);
+$method = $_SERVER['REQUEST_METHOD'];
 
 switch ($uri) {
 
-    /* --- GIAO DIỆN NGƯỜI DÙNG (GUEST/USER) --- */
+    // =========================================================================
+    // VEHICLE
+    // =========================================================================
+
     case "/":
         (new VehicleController())->index();
         break;
@@ -31,13 +32,24 @@ switch ($uri) {
         (new VehicleController())->searchCars();
         break;
 
-    /* --- HỆ THỐNG TÀI KHOẢN (AUTH) --- */
+    case "/search-bar":
+        (new VehicleController())->searchBar();
+        break;
+
+    // =========================================================================
+    // AUTH
+    // =========================================================================
+
     case "/login":
-        (new AuthController())->login();
+        $method === 'POST'
+            ? (new AuthController())->handleLogin()
+            : (new AuthController())->login();
         break;
 
     case "/register":
-        (new AuthController())->register();
+        $method === 'POST'
+            ? (new AuthController())->handleRegister()
+            : (new AuthController())->register();
         break;
 
     case "/logout":
@@ -45,15 +57,23 @@ switch ($uri) {
         break;
 
     case "/profile":
-        (new AuthController())->profile();
+        (new AuthController())->showProfilePage();
         break;
 
     case "/update-profile":
-        (new AuthController())->updateProfile();
+        if ($method === 'POST') (new AuthController())->updateProfile();
         break;
 
-    case "/change-password":
-        (new AuthController())->changePassword();
+    case "/update-password":
+        if ($method === 'POST') (new AuthController())->updatePassword();
+        break;
+
+    case "/update-payment":
+        if ($method === 'POST') (new AuthController())->savePayment();
+        break;
+
+    case "/verify-current-password":
+        if ($method === 'POST') (new AuthController())->verifyCurrentPassword();
         break;
 
     case "/forgot-password":
@@ -64,6 +84,10 @@ switch ($uri) {
         (new AuthController())->forgotPassword();
         break;
 
+    case "/profile/send-otp":
+        if ($method === 'POST') (new AuthController())->forgotPassword();
+        break;
+
     case "/verify-otp":
         (new AuthController())->verifyOTP();
         break;
@@ -72,7 +96,10 @@ switch ($uri) {
         (new AuthController())->resetPassword();
         break;
 
-    /* --- ĐẶT XE (BOOKING) --- */
+    // =========================================================================
+    // BOOKING
+    // =========================================================================
+
     case "/booking-form":
         (new BookingController())->showBookingForm();
         break;
@@ -81,12 +108,12 @@ switch ($uri) {
         (new BookingController())->calculateBooking();
         break;
 
-    case "/confirm-booking":
-        (new BookingController())->confirmBooking();
+    case "/checkout":
+        (new PaymentController())->index();
         break;
 
-    case "/booking-success":
-        require "app/views/booking/success.php";
+    case "/confirm-booking":
+        (new BookingController())->confirmBooking();
         break;
 
     case "/my_booking":
@@ -97,11 +124,16 @@ switch ($uri) {
         (new BookingController())->cancelBooking();
         break;
 
-    case "/checkout":
-        (new PaymentController())->index();
+    // Trả về các khoảng ngày đã bị đặt của một xe (dùng cho datepicker)
+    case "/booked-dates":
+    case "/get-booked-dates":
+        (new BookingController())->getBookedDates();
         break;
 
-    /* --- KÝ GỬI XE (CONSIGNMENT) --- */
+    // =========================================================================
+    // CONSIGNMENT (Ký gửi xe)
+    // =========================================================================
+
     case "/register-car":
         (new VehicleController())->showConsignmentForm();
         break;
@@ -110,7 +142,42 @@ switch ($uri) {
         (new VehicleController())->submitConsignment();
         break;
 
-    /* --- QUẢN TRỊ VIÊN (ADMIN) --- */
+    // =========================================================================
+    // SUPPORT
+    // =========================================================================
+
+    case "/enquiry":
+        (new SupportController())->index();
+        break;
+
+    case "/send-enquiry":
+        (new SupportController())->sendEnquiry();
+        break;
+
+    case "/get-enquiries":
+        (new SupportController())->getEnquiries();
+        break;
+
+    case "/ticket/create":
+        (new SupportController())->createTicket();
+        break;
+
+    case "/ticket/close":
+        (new SupportController())->endTicket();
+        break;
+
+    case "/ticket/view":
+        (new SupportController())->viewDetail();
+        break;
+
+    case "/ticket/reply":
+        (new SupportController())->sendTicketReply();
+        break;
+
+    // =========================================================================
+    // ADMIN
+    // =========================================================================
+
     case "/admin/dashboard":
         (new AdminController())->index();
         break;
@@ -151,7 +218,6 @@ switch ($uri) {
         (new AdminController())->updateRole();
         break;
 
-    // Duyệt xe ký gửi
     case "/admin/requests":
         (new AdminController())->manageRequests();
         break;
@@ -164,62 +230,36 @@ switch ($uri) {
         (new AdminController())->rejectCar();
         break;
 
-    /* --- NHÂN VIÊN (STAFF) --- */
+    case "/admin/enquiries":
+        (new AdminController())->manageEnquiries();
+        break;
+
+    case "/admin/reply-enquiry":
+        (new AdminController())->replyEnquiry();
+        break;
+
+    case "/admin/tickets":
+        (new SupportController())->adminTickets();
+        break;
+
+    case "/admin/ticket/reply":
+        (new SupportController())->adminReplyTicket();
+        break;
+
+    // =========================================================================
+    // STAFF
+    // =========================================================================
+
     case "/staff/dashboard":
         (new StaffController())->index();
         break;
 
-    /* --- HỖ TRỢ KHÁCH HÀNG (SUPPORT) --- */
-    case "/enquiry":
-        (new SupportController())->index(); // Hoặc hàm tương ứng để hiện trang hỗ trợ
-    break;
-    
-    case "/send-enquiry":
-        (new SupportController())->sendEnquiry();
-    break;
+    // =========================================================================
+    // 404
+    // =========================================================================
 
-    case "/admin/enquiries":
-        (new AdminController())->manageEnquiries();
-    break;
-
-    case "/admin/reply-enquiry":
-        (new AdminController())->replyEnquiry();
-    break;
-
-    case '/ticket/create':
-        (new SupportController())->createTicket();
-        break;
-
-    // 3. API Đóng Ticket (Dùng cho nút "End Ticket")
-    case '/ticket/close':
-        (new SupportController())->endTicket();
-        break;
-
-    // 4. Xem chi tiết một Ticket (Trang chat nội bộ của Ticket)
-    case '/ticket/view':
-        (new SupportController())->viewDetail(); // Bạn cần viết thêm hàm này trong Controller
-        break;
-
-    // Route để gửi tin nhắn phản hồi (Reply)
-    case '/ticket/reply':
-        (new SupportController())->sendTicketReply();
-        break;
-
-    // 2. Route lấy lịch sử tin nhắn (Dùng để hiển thị lên khung chat)
-    case '/get-enquiries':
-        (new SupportController())->getEnquiries();
-        break;
-    /* --- MẶC ĐỊNH --- */
-
-    case '/admin/tickets':
-    (new SupportController())->adminTickets();
-    break;
-
-    case '/admin/ticket/reply':
-        (new SupportController())->adminReplyTicket();
-        break;
     default:
         http_response_code(404);
-        echo "404 page not found";
+        require "app/views/errors/404.php";
         break;
 }
