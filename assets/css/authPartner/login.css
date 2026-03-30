@@ -1,0 +1,199 @@
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --ink:    #0a0f1e;
+            --slate:  #141b2d;
+            --accent: #3b6ef8;
+            --gold:   #f0b429;
+            --muted:  #8892a4;
+            --border: rgba(255,255,255,0.08);
+            --input-bg: rgba(255,255,255,0.05);
+        }
+
+        html, body { height: 100%; font-family: 'DM Sans', sans-serif; }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: var(--ink);
+            color: #fff;
+        }
+
+        /* ── Left panel ── */
+        .left {
+            flex: 1;
+            background:
+                linear-gradient(160deg, rgba(10,15,30,0.85) 0%, rgba(20,27,45,0.7) 100%),
+                url('/car_rental/images/main_background.jpg') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 52px 56px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative circle */
+        .left::after {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            border: 1px solid rgba(59,110,248,0.15);
+            bottom: -150px; left: -100px;
+            pointer-events: none;
+        }
+        .left::before {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            border: 1px solid rgba(240,180,41,0.1);
+            top: -80px; right: 40px;
+            pointer-events: none;
+        }
+
+        .left-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+        }
+        .left-logo span { color: var(--accent); }
+
+        .left-hero { }
+        .partner-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(240,180,41,0.12);
+            border: 1px solid rgba(240,180,41,0.25);
+            color: var(--gold);
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 6px 16px; border-radius: 30px;
+            margin-bottom: 28px;
+        }
+        .left-hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+        .left-hero h1 em { font-style: normal; color: var(--accent); }
+        .left-hero p { color: rgba(255,255,255,0.55); font-size: 0.95rem; line-height: 1.7; max-width: 380px; }
+
+        .left-stats {
+            display: flex; gap: 40px;
+        }
+        .stat { }
+        .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: #fff; }
+        .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+        /* ── Right panel ── */
+        .right {
+            width: 480px;
+            background: var(--slate);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 52px 52px;
+            border-left: 1px solid var(--border);
+        }
+
+        .form-wrap { width: 100%; }
+
+        .form-wrap h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .form-wrap .sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 40px;
+        }
+
+        .field { margin-bottom: 22px; }
+        .field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 48px 14px 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: #fff;
+            outline: none;
+            transition: border-color .2s, background .2s;
+        }
+        .input-wrap input::placeholder { color: rgba(255,255,255,0.2); }
+        .input-wrap input:focus {
+            border-color: var(--accent);
+            background: rgba(59,110,248,0.06);
+        }
+        .input-wrap i {
+            position: absolute; right: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.25); cursor: pointer; font-size: 0.95rem;
+            transition: color .2s;
+        }
+        .input-wrap i:hover { color: var(--accent); }
+
+        .forgot {
+            display: block; text-align: right;
+            font-size: 0.8rem; color: var(--muted);
+            text-decoration: none; margin-top: -12px; margin-bottom: 28px;
+            transition: color .2s;
+        }
+        .forgot:hover { color: var(--accent); }
+
+        .btn-login {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s, transform .2s;
+            letter-spacing: 0.5px;
+        }
+        .btn-login:hover { background: #2558e8; transform: translateY(-1px); }
+
+        .divider {
+            display: flex; align-items: center; gap: 14px;
+            color: var(--muted); font-size: 0.8rem;
+            margin: 28px 0;
+        }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+
+        .btn-register {
+            display: block; width: 100%; text-align: center;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: rgba(255,255,255,0.7);
+            padding: 14px;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem; font-weight: 600;
+            text-decoration: none;
+            transition: border-color .2s, color .2s;
+        }
+        .btn-register:hover { border-color: var(--accent); color: #fff; }
+
+        /* SweetAlert dark override */
+        body.swal2-shown { padding-right: 0 !important; }

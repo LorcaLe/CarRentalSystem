@@ -3,71 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - CarRental</title>
+    <title>Admin Dashboard - PrivateHire Cars</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        :root { --sidebar-bg: #0f172a; --main-bg: #f8fafc; --accent: #3b82f6; }
-        body { background-color: var(--main-bg); font-family: 'Inter', system-ui, sans-serif; }
-        
-        /* Sidebar */
-        .sidebar { width: 260px; height: 100vh; position: fixed; background: var(--sidebar-bg); color: #fff; z-index: 1000; }
-        .main-content { margin-left: 260px; padding: 40px; min-height: 100vh; }
-        .nav-link { color: #94a3b8; padding: 14px 25px; transition: 0.2s; border-left: 4px solid transparent; }
-        .nav-link:hover, .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-left-color: var(--accent); }
-        .nav-link.active { color: var(--accent); }
-
-        /* Cards */
-        .stat-card { border: none; border-radius: 16px; transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .card-table { border: none; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        
-        /* Badges Custom */
-        .badge-soft-success { background: #dcfce7; color: #15803d; }
-        .badge-soft-warning { background: #fef9c3; color: #a16207; }
-        .badge-soft-danger { background: #fee2e2; color: #b91c1c; }
-
-        /* Sidebar Nav Links */
-        .nav-link {
-            color: #94a3b8 !important; /* Màu xám mặc định */
-            padding: 14px 25px;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-link:hover {
-            background: rgba(59, 130, 246, 0.05);
-            color: #fff !important;
-        }
-
-        /* Hiệu ứng khi Active */
-        .nav-link.active {
-            background: rgba(59, 130, 246, 0.15) !important; /* Nền xanh mờ */
-            color: #3b82f6 !important; /* Chữ xanh sáng */
-            border-left-color: #3b82f6 !important; /* Vạch xanh bên trái */
-            font-weight: 600;
-        }
-
-        /* Fix Badge căn giữa trong flexbox */
-        .nav-link .badge {
-            margin-left: auto; /* Đẩy badge về bên phải */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="/car_rental/assets/css/admin/request.css">
 </head>
 <body>
 
 <div class="sidebar d-flex flex-column shadow">
     <div class="p-4 text-center border-bottom border-secondary border-opacity-25">
         <h4 class="fw-bold mb-0 text-white"><i class="fas fa-shield-alt me-2 text-primary"></i>Admin Panel</h4>
-        <small class="text-muted">Car Rental Management</small>
     </div>
     
     <nav class="nav flex-column mt-3 flex-grow-1">

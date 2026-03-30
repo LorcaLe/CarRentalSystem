@@ -298,60 +298,74 @@ public function handleUpdatePasswordWithOTP() {
 // AuthController.php
 // Trong AuthController.php (Hàm xử lý đăng ký)
 public function handleRegister() {
+    $role   = $_POST['role'] ?? 'user';
     $result = $this->userModel->register($_POST);
 
+    $loginUrl    = $role === 'partner' ? "/car_rental/public/partner/login"    : "/car_rental/public/login";
+    $registerUrl = $role === 'partner' ? "/car_rental/public/partner/register" : "/car_rental/public/register";
+
     if ($result === true) {
-        // Thay vì header ngay, ta load lại view Register với biến success
         $_SESSION['success_msg'] = "Your account has been created successfully!";
-        header("Location: /car_rental/public/register"); // Quay lại register để hiện thông báo
-        exit();
+        header("Location: " . $loginUrl);
     } else {
         $_SESSION['error_msg'] = $result;
-        header("Location: /car_rental/public/register");
-        exit();
+        header("Location: " . $registerUrl);
     }
+    exit;
 }
 public function handleLogin() {
     $identifier = $_POST['identifier'] ?? '';
-    $password = $_POST['password'] ?? '';
+    $password   = $_POST['password']   ?? '';
+    $portal     = $_POST['portal']     ?? '';
+
+    $redirectBack = $portal === 'partner'
+        ? "/car_rental/public/partner/login"
+        : "/car_rental/public/login";
 
     if (empty($identifier) || empty($password)) {
-        $_SESSION['error_msg'] = "Please enter both Email/Phone and Password";
-        header("Location: /car_rental/public/login");
-        exit();
+        $_SESSION['error_msg'] = "Please enter both Email/Phone and Password.";
+        header("Location: " . $redirectBack);
+        exit;
     }
 
-    // 1. Tìm user trong Database dựa trên Email hoặc Phone
     $conn = (new Database())->conn;
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? OR phone = ? LIMIT 1");
     $stmt->bind_param("ss", $identifier, $identifier);
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();
 
-    // 2. Kiểm tra user có tồn tại và khớp mật khẩu không
     if ($user && password_verify($password, $user['password'])) {
-        
-        // Đăng nhập thành công -> Lưu thông tin vào Session
+
+        // Nếu đăng nhập qua partner portal, chặn role không phải partner/admin
+        if ($portal === 'partner' && !in_array($user['role'], ['partner', 'admin'])) {
+            $_SESSION['error_msg'] = "This portal is for partners only. Please use the customer login.";
+            header("Location: /car_rental/public/partner/login");
+            exit;
+        }
+
         $_SESSION['user'] = [
             'id'    => $user['id'],
             'name'  => $user['name'],
             'email' => $user['email'],
-            'role'  => $user['role']
+            'role'  => $user['role'],
         ];
 
-        // Chuyển hướng theo quyền (Role-based)
+        // Redirect theo role
         if ($user['role'] === 'admin') {
             header("Location: /car_rental/public/admin/dashboard");
+        } elseif ($user['role'] === 'partner') {
+            header("Location: /car_rental/public/partner/dashboard");
+        } elseif ($user['role'] === 'staff') {
+            header("Location: /car_rental/public/staff/dashboard");
         } else {
-            header("Location: /car_rental/public/"); // Về trang chủ
+            header("Location: /car_rental/public/");
         }
-        exit();
-        
+        exit;
+
     } else {
-        // Sai tài khoản hoặc mật khẩu
         $_SESSION['error_msg'] = "Invalid Email/Phone or Password!";
-        header("Location: /car_rental/public/login");
-        exit();
+        header("Location: " . $redirectBack);
+        exit;
     }
 }
 public function showProfilePage() {

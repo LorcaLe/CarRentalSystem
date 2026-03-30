@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarRental</title>
+    <title>PrivateHire Cars</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -16,7 +16,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 mb-4">
     <div class="topbar">
 
-    <div class="logo" name="logo" id="logo">CarRental</div>
+    <div class="logo" name="logo" id="logo">PrivateHire Cars</div>
 
     <div class="nav-links">
     <?php if(isset($_SESSION['user'])){ ?>
@@ -46,10 +46,6 @@
 
     <a href="/car_rental/public/enquiry">
     💬 Support
-    </a>
-
-    <a href="/car_rental/public/register-car">
-    🚗 Register Car
     </a>
     
     <a href="/car_rental/public/logout" class="logout">

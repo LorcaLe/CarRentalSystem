@@ -1,0 +1,76 @@
+        body { background: #f1f5f9; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        .ticket-sidebar { background: white; border-right: 1px solid #e2e8f0; height: 100vh; overflow-y: auto; }
+        .chat-container { height: 100vh; display: flex; flex-direction: column; background: #f8fafc; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .ticket-item { cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: 0.2s; }
+        .ticket-item:hover { background: #f8fafc; }
+        .ticket-item.active { background: #eff6ff; border-left: 4px solid #3b82f6; }
+        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 14px; position: relative; }
+        .bubble-admin { align-self: flex-end; background: #3b82f6; color: white; border-bottom-right-radius: 4px; }
+        .bubble-user { align-self: flex-start; background: white; color: #1e293b; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .col-md-8.col-lg-9 {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 0 0 60%;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Tăng khoảng cách giữa các bong bóng cho thoáng */
+            background: #f8fafc;
+            /* Đảm bảo phần này luôn chiếm ít nhất 60-70% màn hình */
+            min-height: 400px; 
+        }
+
+        /* Tối ưu lại phần footer để nó gọn gàng hơn */
+        /* Footer linh hoạt chiều cao */
+        .chat-footer {
+            flex: 0 0 40%;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 1px solid #e2e8f0;
+        }
+
+        #adminReplyMsg {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            
+            /* 1. KHÔNG cho phép người dùng kéo dãn bằng tay gây vỡ layout */
+            resize: none !important; 
+            
+            /* 2. CHỈNH ĐỘ CAO: 160px là khoảng cách vừa đủ cho 5-6 dòng chữ */
+            min-height: 160px; 
+            
+            /* 3.typography: Giữ font 15px và line-height 1.6 để nhìn chuyên nghiệp như Gmail */
+            font-size: 15px;
+            line-height: 1.6;
+            color: #1e293b;
+            width: 100%;
+            padding: 5px;
+        }
+
+        /* Đảm bảo khung bao dãn ra để chứa ô nhập 160px này */
+        .input-wrapper {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper:focus-within {
+            background: white;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+        }

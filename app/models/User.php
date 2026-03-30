@@ -12,53 +12,45 @@ class User {
     }
 
 public function register($data) {
-    $identity = trim($data['identity'] ?? '');
-    $password = $data['password'] ?? '';
+    $identity         = trim($data['identity'] ?? '');
+    $password         = $data['password']         ?? '';
     $confirm_password = $data['confirm_password'] ?? '';
-    $name = trim($data['name'] ?? 'New User');
+    $name             = trim($data['name']        ?? 'New User');
+    $role             = $data['role']             ?? 'user'; // thêm dòng này
 
-    // 1. Kiểm tra khớp mật khẩu
     if ($password !== $confirm_password) {
         return "Confirm password does not match.";
     }
 
-    // 2. Nhận diện Email/Phone
     $isEmail = filter_var($identity, FILTER_VALIDATE_EMAIL);
     $isPhone = preg_match('/^[0-9]{10,11}$/', $identity);
     if (!$isEmail && !$isPhone) return "Invalid Email or Phone format.";
 
-    // 3. KIỂM TRA TRÙNG LẶP (Dòng này hay gây lỗi nếu bind sai)
-    $checkSql = "SELECT id FROM users WHERE email = ? OR phone = ?";
-    $stmt = $this->conn->prepare($checkSql);
-    $stmt->bind_param("ss", $identity, $identity); // 2 dấu ?, 2 biến -> ĐÚNG
+    $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ? OR phone = ? LIMIT 1");
+    $stmt->bind_param("ss", $identity, $identity);
     $stmt->execute();
     if ($stmt->get_result()->num_rows > 0) {
         return "This Email or Phone number is already registered.";
     }
 
-    // 4. MÃ HÓA VÀ LƯU DATABASE
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-    
-    // Câu SQL này có 4 dấu hỏi (?)
-    $sql = "INSERT INTO users (name, email, phone, password, role, membership_level) VALUES (?, ?, ?, ?, 'user', 'basic')";
-    $insertStmt = $this->conn->prepare($sql);
+    $emailField     = $isEmail ? $identity : null;
+    $phoneField     = $isPhone ? $identity : null;
+
+    // thêm role vào INSERT, bỏ hardcode 'user'
+    $insertStmt = $this->conn->prepare(
+        "INSERT INTO users (name, email, phone, password, role, membership_level)
+         VALUES (?, ?, ?, ?, ?, 'basic')"
+    );
 
     if (!$insertStmt) {
-        // Nếu vẫn lỗi, dòng này sẽ hiện tên cột bị sai trong Database
-        die("SQL Prepare Error: " . $this->conn->error); 
+        return "SQL Error: " . $this->conn->error;
     }
 
-    $emailField = $isEmail ? $identity : null;
-    $phoneField = $isPhone ? $identity : null;
+    // 5 dấu ? → 5 chữ s → 5 biến
+    $insertStmt->bind_param("sssss", $name, $emailField, $phoneField, $hashedPassword, $role);
 
-    // QUAN TRỌNG: 4 dấu hỏi thì phải có 4 chữ "s" và 4 biến
-    $insertStmt->bind_param("ssss", $name, $emailField, $phoneField, $hashedPassword);
-
-    if ($insertStmt->execute()) {
-        return true; 
-    } else {
-        return "Registration failed: " . $insertStmt->error;
-    }
+    return $insertStmt->execute() ? true : "Registration failed: " . $insertStmt->error;
 }
 
     // Tạo mã OTP và lưu vào DB

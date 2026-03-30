@@ -2,110 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Secure Checkout - CarRental</title>
+    <title>Secure Checkout - PrivateHire Cars </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        :root {
-            --primary:    #2563eb;
-            --dark-slate: #1e293b;
-            --glass-bg:   rgba(255, 255, 255, 0.9);
-            --glass-border: rgba(255, 255, 255, 0.5);
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
-                        url('/car_rental/images/main_background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            min-height: 100vh;
-            color: #1f2937;
-        }
-
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
-        }
-
-        .spec-badge {
-            background: #f1f5f9; color: #475569;
-            padding: 6px 14px; border-radius: 12px;
-            font-size: 0.8rem; font-weight: 500;
-            border: 1px solid #e2e8f0;
-        }
-
-        .btn-review-mini {
-            background: var(--primary); color: white;
-            font-size: 0.75rem; padding: 6px 14px;
-            border-radius: 20px; font-weight: 600; border: none;
-        }
-
-        .btn-pay {
-            background: var(--primary) !important; color: white;
-            border: none; padding: 20px; border-radius: 18px;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .btn-pay:hover {
-            background: #1d4ed8 !important;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4);
-        }
-
-        .price-badge {
-            background: var(--dark-slate); color: white;
-            padding: 12px 24px; border-radius: 14px;
-            font-size: 1.3rem; font-weight: 800;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-
-        /* Discount badge nổi bật */
-        .discount-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-            color: #15803d;
-            border: 1px solid #86efac;
-            padding: 5px 12px; border-radius: 20px;
-            font-size: 0.78rem; font-weight: 700;
-        }
-
-        /* Dòng giá gốc bị gạch ngang */
-        .original-price {
-            text-decoration: line-through;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        /* Dòng giảm giá màu xanh lá */
-        .saving-row {
-            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-            border: 1px solid #bbf7d0;
-            border-radius: 12px;
-            padding: 10px 14px;
-        }
-
-        .payment-item {
-            transition: all 0.3s ease; cursor: pointer;
-            border: 2px solid #f1f5f9 !important;
-            border-radius: 20px !important; background: white;
-        }
-        .payment-item.active {
-            border-color: var(--primary) !important;
-            background: #f8faff;
-        }
-
-        .car-thumb {
-            width: 100%; height: 200px; object-fit: contain;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
-            transition: transform 0.5s ease;
-        }
-        .car-thumb:hover { transform: scale(1.05); }
-    </style>
+    <link rel="stylesheet" href="/car_rental/assets/css/checkout.css">
 </head>
 <body>
 

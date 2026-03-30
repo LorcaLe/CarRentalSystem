@@ -9,7 +9,7 @@ require_once "app/controllers/SupportController.php";
 require_once "app/controllers/PaymentController.php";
 require_once "app/controllers/AdminController.php";
 require_once "app/controllers/StaffController.php";
-
+require_once "app/controllers/PartnerController.php";
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = str_replace("/car_rental/public", "", $uri);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -247,11 +247,43 @@ switch ($uri) {
         break;
 
     // =========================================================================
-    // STAFF
+    // PARTNER
     // =========================================================================
 
-    case "/staff/dashboard":
-        (new StaffController())->index();
+    case "/partner/login":
+    $method === 'POST' ? (new AuthController())->handleLogin() : require "app/views/partner/auth/login.php";
+    break;
+
+    case "/partner/register":
+        $method === 'POST' ? (new AuthController())->handleRegister() : require "app/views/partner/auth/register.php";
+        break;
+
+    case "/partner/forgot-password":
+        require "app/views/partner/auth/forgot-password.php";
+        break;
+
+    case "/partner/profile":
+        require "app/views/partner/profile.php";
+        break;
+
+    case "/partner/dashboard":
+        (new PartnerController())->dashboard();
+        break;
+
+    case "/partner/my-cars":
+        (new PartnerController())->myCars();
+        break;
+
+    case "/partner/register-car":
+        (new PartnerController())->registerCar();
+        break;
+
+    case "/partner/submit-car":
+        (new PartnerController())->submitCar();
+        break;
+
+    case "/partner/delete-car":
+        (new PartnerController())->deleteCar();
         break;
 
     // =========================================================================

@@ -3,78 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - CarRental</title>
+    <title>Admin Dashboard - PrivateHire Cars</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        :root { --sidebar-bg: #0f172a; --main-bg: #f8fafc; --accent: #3b82f6; }
-        body { background-color: var(--main-bg); font-family: 'Inter', system-ui, sans-serif; }
-        
-        /* Sidebar */
-        .sidebar { width: 260px; height: 100vh; position: fixed; background: var(--sidebar-bg); color: #fff; z-index: 1000; }
-        .main-content { margin-left: 260px; padding: 40px; min-height: 100vh; }
-        .nav-link { color: #94a3b8; padding: 14px 25px; transition: 0.2s; border-left: 4px solid transparent; }
-        .nav-link:hover, .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-left-color: var(--accent); }
-        .nav-link.active { color: var(--accent); }
-
-        /* Cards */
-        .stat-card { border: none; border-radius: 16px; transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .card-table { border: none; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        
-        /* Badges Custom */
-        .badge-soft-success { background: #dcfce7; color: #15803d; }
-        .badge-soft-warning { background: #fef9c3; color: #a16207; }
-        .badge-soft-danger { background: #fee2e2; color: #b91c1c; }
-
-        /* Sidebar Nav Links */
-        .nav-link {
-            color: #94a3b8 !important; /* Màu xám mặc định */
-            padding: 14px 25px;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-link:hover {
-            background: rgba(59, 130, 246, 0.05);
-            color: #fff !important;
-        }
-
-        /* Hiệu ứng khi Active */
-        .nav-link.active {
-            background: rgba(59, 130, 246, 0.15) !important; /* Nền xanh mờ */
-            color: #3b82f6 !important; /* Chữ xanh sáng */
-            border-left-color: #3b82f6 !important; /* Vạch xanh bên trái */
-            font-weight: 600;
-        }
-
-        /* Fix Badge căn giữa trong flexbox */
-        .nav-link .badge {
-            margin-left: auto; /* Đẩy badge về bên phải */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="/car_rental/assets/css/admin/customer.css">
 </head>
 <body>
 
 <div class="sidebar d-flex flex-column shadow">
     <div class="p-4 text-center border-bottom border-secondary border-opacity-25">
         <h4 class="fw-bold mb-0 text-white"><i class="fas fa-shield-alt me-2 text-primary"></i>Admin Panel</h4>
-        <small class="text-muted">Car Rental Management</small>
     </div>
     
     <nav class="nav flex-column mt-3 flex-grow-1">
-        <?php 
-            // Lấy URI hiện tại để so sánh
-            $current_uri = $_SERVER['REQUEST_URI']; 
-        ?>
+        <?php $current_uri = $_SERVER['REQUEST_URI']; ?>
 
         <a class="nav-link <?= strpos($current_uri, '/admin/dashboard') !== false ? 'active' : '' ?>" href="/car_rental/public/admin/dashboard">
             <i class="fas fa-th-large me-2"></i> Dashboard
@@ -123,7 +71,7 @@
 </div>
 
 <div class="main-content">
-    <h2 class="fw-bold mb-4">Customer & Staff List</h2>
+    <h2 class="fw-bold mb-4">Customer & Partner List</h2>
 
     <div class="card stat-card border-0 shadow-sm rounded-4">
         <div class="card-body p-0">
@@ -133,9 +81,8 @@
                         <tr>
                             <th class="ps-4 py-3">User Info</th>
                             <th class="py-3">Contact</th>
-                            <th class="py-3">Role</th>
+                            <th class="py-3 text-center">Role</th>
                             <th class="py-3">Joined Date</th>
-                            <th class="py-3 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,19 +96,62 @@
                                 <div><i class="far fa-envelope me-1 small"></i> <?= $c['email'] ?: 'N/A' ?></div>
                                 <div class="small"><i class="fas fa-phone me-1 small"></i> <?= $c['phone'] ?: 'N/A' ?></div>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <?php 
-                                    $badge = 'bg-secondary';
-                                    if($c['role'] == 'admin') $badge = 'bg-danger';
-                                    if($c['role'] == 'staff') $badge = 'bg-info text-dark';
+                                    // Xác định class màu và icon dựa trên role
+                                    $role = strtolower($c['role']);
+                                    $bgClass = 'bg-secondary text-white';
+                                    $iconClass = 'fa-user';
+
+                                    if($role == 'admin') {
+                                        $bgClass = 'bg-danger text-white';
+                                        $iconClass = 'fa-user-shield';
+                                    } elseif($role == 'partner') {
+                                        $bgClass = 'bg-warning text-dark';
+                                        $iconClass = 'fa-handshake';
+                                    }
                                 ?>
-                                <span class="badge <?= $badge ?> rounded-pill px-3"><?= strtoupper($c['role']) ?></span>
+                                
+                                <div class="dropdown">
+                                    <button class="btn btn-sm dropdown-toggle rounded-pill fw-bold border-0 <?= $bgClass ?> role-btn-<?= $c['id'] ?>" 
+                                            type="button" 
+                                            data-bs-toggle="dropdown" 
+                                            aria-expanded="false"
+                                            style="width: 125px; font-size: 0.75rem; letter-spacing: 0.5px;">
+                                        <i class="fas <?= $iconClass ?> me-1 role-icon-<?= $c['id'] ?>"></i> 
+                                        <span class="role-text-<?= $c['id'] ?>"><?= strtoupper($role) ?></span>
+                                    </button>
+                                    
+                                    <ul class="dropdown-menu border-0 shadow rounded-3 fs-7" style="min-width: 140px;">
+                                        <li>
+                                            <a class="dropdown-item py-2 d-flex align-items-center role-option" href="#" 
+                                            data-user-id="<?= $c['id'] ?>" 
+                                            data-user-name="<?= htmlspecialchars($c['name']) ?>"
+                                            data-new-role="admin">
+                                                <i class="fas fa-user-shield text-danger me-2" style="width: 20px; text-align: center;"></i> <b>ADMIN</b>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2 d-flex align-items-center role-option" href="#" 
+                                            data-user-id="<?= $c['id'] ?>" 
+                                            data-user-name="<?= htmlspecialchars($c['name']) ?>"
+                                            data-new-role="partner">
+                                                <i class="fas fa-handshake text-warning me-2" style="width: 20px; text-align: center;"></i> <b>PARTNER</b>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2 d-flex align-items-center role-option" href="#" 
+                                            data-user-id="<?= $c['id'] ?>" 
+                                            data-user-name="<?= htmlspecialchars($c['name']) ?>"
+                                            data-new-role="user">
+                                                <i class="fas fa-user text-secondary me-2" style="width: 20px; text-align: center;"></i> <b>USER</b>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                             <td>
                                 <?= isset($c['created_at']) ? date('d M, Y', strtotime($c['created_at'])) : 'Unknown' ?>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-light border" title="View Details"><i class="fas fa-eye text-muted"></i></button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -172,17 +162,101 @@
     </div>
 </div>
 
-</body>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- ĐÂY LÀ JS BẮT BUỘC ĐỂ DROPDOWN CỦA BOOTSTRAP CHẠY ĐƯỢC -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+    // Xử lý nút Logout
     document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
         e.preventDefault();
         const logoutUrl = this.href;
         Swal.fire({
-            title: 'Ready to leave?', text: "You are about to log out of the Admin Dashboard.",
-            icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545',
+            title: 'Ready to leave?', 
+            text: "You are about to log out of the Admin Dashboard.",
+            icon: 'warning', 
+            showCancelButton: true, 
+            confirmButtonColor: '#dc3545',
             confirmButtonText: 'Yes, Logout'
-        }).then((result) => { if (result.isConfirmed) window.location.href = logoutUrl; });
+        }).then((result) => { 
+            if (result.isConfirmed) window.location.href = logoutUrl; 
+        });
+    });
+
+    // Xử lý thay đổi Role
+    document.querySelectorAll('.role-option').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault(); // Ngăn load lại trang khi click thẻ <a>
+            
+            const userId = this.getAttribute('data-user-id');
+            const userName = this.getAttribute('data-user-name');
+            const newRole = this.getAttribute('data-new-role');
+            
+            // Lấy UI elements để cập nhật sau khi thành công
+            const btn = document.querySelector(`.role-btn-${userId}`);
+            const icon = document.querySelector(`.role-icon-${userId}`);
+            const textSpan = document.querySelector(`.role-text-${userId}`);
+            const currentRole = textSpan.innerText.toLowerCase();
+
+            // Nếu click vào role hiện tại thì bỏ qua
+            if (currentRole === newRole) return;
+
+            Swal.fire({
+                title: 'Confirm Role Change',
+                html: `Are you sure you want to change <b>${userName}</b>'s role to <b>${newRole.toUpperCase()}</b>?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3b82f6',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, change it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+                    const formData = new URLSearchParams();
+                    formData.append('user_id', userId);
+                    formData.append('role', newRole);
+
+                    fetch('/car_rental/public/admin/update-role', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData.toString()
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data.trim() === 'success') {
+                            Swal.fire({ icon: 'success', title: 'Updated!', text: `${userName} is now a ${newRole.toUpperCase()}.`, confirmButtonColor: '#3b82f6' });
+                            
+                            // 1. Cập nhật Text
+                            textSpan.innerText = newRole.toUpperCase();
+                            
+                            // 2. Xóa các class màu cũ
+                            btn.classList.remove('bg-danger', 'bg-warning', 'bg-secondary', 'text-white', 'text-dark');
+                            icon.classList.remove('fa-user-shield', 'fa-handshake', 'fa-user');
+
+                            // 3. Thêm class màu và icon mới
+                            if (newRole === 'admin') {
+                                btn.classList.add('bg-danger', 'text-white');
+                                icon.classList.add('fa-user-shield');
+                            } else if (newRole === 'partner') {
+                                btn.classList.add('bg-warning', 'text-dark');
+                                icon.classList.add('fa-handshake');
+                            } else {
+                                btn.classList.add('bg-secondary', 'text-white');
+                                icon.classList.add('fa-user');
+                            }
+                        } else {
+                            Swal.fire('Error', 'Failed to update role in database.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Network error. Could not connect to server.', 'error');
+                    });
+                }
+            });
+        });
     });
 </script>
+</body>
 </html>

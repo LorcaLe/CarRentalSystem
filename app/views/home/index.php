@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Luxury Car Rental</title>
+    <title>PrivateHire Cars</title>
     <base href="http://localhost/car_rental/public/">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -120,8 +120,18 @@
     <div class="top-trigger"></div>
 
     <nav class="topbar">
-        <div class="logo" id="logo" style="cursor:pointer">CarRental</div>
-        <div class="nav-links">
+        <div class="logo" id="logo" style="cursor:pointer">PrivateHire Cars</div>
+        <div class="nav-links" style="display:flex; align-items:center; gap:12px;">
+
+            <?php if (!isset($_SESSION['user'])): ?>
+                <a href="/car_rental/public/partner/login"
+                style="font-weight:600; color:#3b6ef8; border:1.5px solid #3b6ef8;
+                        padding:6px 18px; border-radius:20px; text-decoration:none;
+                        font-size:0.88rem; white-space:nowrap;">
+                    🤝 Partner
+                </a>
+            <?php endif; ?>
+
             <?php if (isset($_SESSION['user'])): ?>
                 <div class="user-menu">
                     <div class="user-trigger">
@@ -132,13 +142,16 @@
                         <a href="/car_rental/public/profile">👤 My Profile</a>
                         <a href="/car_rental/public/my_booking">📄 My Bookings</a>
                         <a href="/car_rental/public/enquiry">💬 Support</a>
-                        <a href="/car_rental/public/register-car">🚗 Register Car</a>
+                        <?php if ($_SESSION['user']['role'] === 'partner'): ?>
+                            <a href="/car_rental/public/partner/dashboard">🚗 Partner Dashboard</a>
+                        <?php endif; ?>
                         <a href="/car_rental/public/logout" class="logout">🚪 Logout</a>
                     </div>
                 </div>
             <?php else: ?>
                 <a href="/car_rental/app/views/auth/login.php">👤 Login</a>
             <?php endif; ?>
+
         </div>
     </nav>
 
@@ -614,35 +627,50 @@
 
             currentSelectedCarId = card.dataset.id;
 
-            fetch("/car_rental/public/car-detail?id=" + currentSelectedCarId)
-                .then(res => res.json())
-                .then(data => {
-                    currentCarPrice = data.price_per_day;
-                    window.currentCarLocation = data.location;
-                    document.getElementById("mainImage").src = "/car_rental/images/" + data.image;
+        fetch("/car_rental/public/car-detail?id=" + currentSelectedCarId)
+            .then(res => res.json())
+            .then(data => {
+                if (!data) return; // guard nếu xe không tồn tại
 
-                    const thumbs = document.getElementById("thumbList");
-                    if (thumbs) {
-                        thumbs.innerHTML = "";
-                        [data.image, data.image2, data.image3].filter(Boolean).forEach(img => {
-                            const el = document.createElement("img");
-                            el.src     = "/car_rental/images/" + img;
-                            el.onclick = () => document.getElementById("mainImage").src = el.src;
-                            thumbs.appendChild(el);
-                        });
-                    }
+                currentCarPrice = data.price_per_day;
+                window.currentCarLocation = data.location;
 
-                    document.getElementById("carName").innerText         = data.name;
-                    document.getElementById("carPrice").innerText        = new Intl.NumberFormat().format(data.price_per_day) + " VND/day";
-                    document.getElementById("carRating").innerHTML       = "⭐ ".repeat(Math.floor(data.rating || 0) - 1) + " " + (data.rating || 0);
-                    document.getElementById("carTransmission").innerText = data.transmission;
-                    document.getElementById("carFuel").innerText         = data.fuel_type;
-                    document.getElementById("carSeats").innerText        = data.seats + " seats";
-                    document.getElementById("carDescription").innerText  = data.description;
-                    document.getElementById("brandLogo").src             = "/car_rental/images/" + data.brand_logo;
+                document.getElementById("mainImage").src = "/car_rental/images/" + (data.image || 'default.jpg');
 
-                    document.getElementById("carModal").style.display = "flex";
-                });
+                const thumbs = document.getElementById("thumbList");
+                if (thumbs) {
+                    thumbs.innerHTML = "";
+                    [data.image, data.image2, data.image3].filter(Boolean).forEach(img => {
+                        const el    = document.createElement("img");
+                        el.src      = "/car_rental/images/" + img;
+                        el.onclick  = () => document.getElementById("mainImage").src = el.src;
+                        thumbs.appendChild(el);
+                    });
+                }
+
+                document.getElementById("carName").innerText         = data.name         || '';
+                document.getElementById("carPrice").innerText        = new Intl.NumberFormat('vi-VN').format(data.price_per_day) + " VND/day";
+                document.getElementById("carTransmission").innerText = data.transmission  || '—';
+                document.getElementById("carFuel").innerText         = data.fuel_type     || '—';
+                document.getElementById("carSeats").innerText        = (data.seats || '—') + " seats";
+                document.getElementById("carDescription").innerText  = data.description   || 'No description available.';
+
+                // Fix: Math.max(0, ...) để tránh repeat(-1) gây RangeError
+                const rating = parseFloat(data.rating) || 0;
+                document.getElementById("carRating").innerHTML = "⭐ ".repeat(Math.max(0, Math.floor(rating))) + " " + (rating || 'No rating');
+
+                // brand_logo có thể null với xe partner mới
+                const brandLogo = document.getElementById("brandLogo");
+                if (data.brand_logo) {
+                    brandLogo.src   = "/car_rental/images/" + data.brand_logo;
+                    brandLogo.style.display = 'block';
+                } else {
+                    brandLogo.style.display = 'none';
+                }
+
+                document.getElementById("carModal").style.display = "flex";
+            })
+            .catch(err => console.error("Car detail error:", err));
         });
 
         function closeModal() {

@@ -1,0 +1,51 @@
+        :root { --sidebar-bg: #0f172a; --main-bg: #f8fafc; --accent: #3b82f6; }
+        body { background-color: var(--main-bg); font-family: 'Inter', system-ui, sans-serif; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; height: 100vh; position: fixed; background: var(--sidebar-bg); color: #fff; z-index: 1000; }
+        .main-content { margin-left: 260px; padding: 40px; min-height: 100vh; }
+        .nav-link { color: #94a3b8; padding: 14px 25px; transition: 0.2s; border-left: 4px solid transparent; }
+        .nav-link:hover, .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-left-color: var(--accent); }
+        .nav-link.active { color: var(--accent); }
+
+        /* Cards */
+        .stat-card { border: none; border-radius: 16px; transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .card-table { border: none; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        
+        /* Badges Custom */
+        .badge-soft-success { background: #dcfce7; color: #15803d; }
+        .badge-soft-warning { background: #fef9c3; color: #a16207; }
+        .badge-soft-danger { background: #fee2e2; color: #b91c1c; }
+
+        /* Sidebar Nav Links */
+        .nav-link {
+            color: #94a3b8 !important; /* Màu xám mặc định */
+            padding: 14px 25px;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover {
+            background: rgba(59, 130, 246, 0.05);
+            color: #fff !important;
+        }
+
+        /* Hiệu ứng khi Active */
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.15) !important; /* Nền xanh mờ */
+            color: #3b82f6 !important; /* Chữ xanh sáng */
+            border-left-color: #3b82f6 !important; /* Vạch xanh bên trái */
+            font-weight: 600;
+        }
+
+        /* Fix Badge căn giữa trong flexbox */
+        .nav-link .badge {
+            margin-left: auto; /* Đẩy badge về bên phải */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }

@@ -22,9 +22,14 @@ class Vehicle {
     }
 
     public function getAllCars() {
-        $result = $this->conn->query("SELECT * FROM vehicles ORDER BY id DESC");
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
+            // Dùng LEFT JOIN để lấy tên chủ xe. Nếu owner_id = NULL, owner_name sẽ là NULL
+            $sql = "SELECT v.*, u.name AS owner_name 
+                    FROM vehicles v 
+                    LEFT JOIN users u ON v.owner_id = u.id 
+                    ORDER BY v.id DESC";
+            $result = $this->conn->query($sql);
+            return $result->fetch_all(MYSQLI_ASSOC);
+        }
 
     public function getLuxuryCars($limit = 8) {
         $stmt = $this->conn->prepare(
@@ -246,11 +251,17 @@ class Vehicle {
     public function register($data) {
         $stmt = $this->conn->prepare(
             "INSERT INTO vehicles
-                (owner_id, name, Branch, price_per_day, seats, transmission, fuel_type, location, image, status, available)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)"
+                (owner_id, name, Branch, price_per_day, seats, transmission, fuel_type, location, image, status, description, available)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)"
         );
+
+        if (!$stmt) {
+            die("Prepare Error: " . $this->conn->error);
+        }
+
+        // issiisssss + s = "issiissssss" — 11 tham số
         $stmt->bind_param(
-            "issiisssss",
+            "issiissssss",
             $data['owner_id'],
             $data['name'],
             $data['branch'],
@@ -260,22 +271,24 @@ class Vehicle {
             $data['fuel_type'],
             $data['location'],
             $data['image'],
-            $data['status']
+            $data['status'],
+            $data['description']
         );
+
         return $stmt->execute();
     }
 
-    public function update($id, $name, $branch, $price, $seats, $transmission, $fuelType, $image = null) {
+    public function update($id, $name, $branch, $price, $seats, $transmission, $fuelType, $description, $image = null) {
         if ($image) {
             $stmt = $this->conn->prepare(
-                "UPDATE vehicles SET name=?, Branch=?, price_per_day=?, seats=?, transmission=?, fuel_type=?, image=? WHERE id=?"
+                "UPDATE vehicles SET name=?, Branch=?, price_per_day=?, seats=?, transmission=?, fuel_type=?,description=?, image=? WHERE id=?"
             );
-            $stmt->bind_param("ssiisssi", $name, $branch, $price, $seats, $transmission, $fuelType, $image, $id);
+            $stmt->bind_param("ssiisssi", $name, $branch, $price, $seats, $transmission, $fuelType, $description, $image, $id);
         } else {
             $stmt = $this->conn->prepare(
-                "UPDATE vehicles SET name=?, Branch=?, price_per_day=?, seats=?, transmission=?, fuel_type=? WHERE id=?"
+                "UPDATE vehicles SET name=?, Branch=?, price_per_day=?, seats=?, transmission=?, fuel_type=?, description=? WHERE id=?"
             );
-            $stmt->bind_param("ssiissi", $name, $branch, $price, $seats, $transmission, $fuelType, $id);
+            $stmt->bind_param("ssiissi", $name, $branch, $price, $seats, $transmission, $fuelType,$description, $id);
         }
         return $stmt->execute();
     }
@@ -292,12 +305,35 @@ class Vehicle {
         return $stmt->execute();
     }
 
-    public function create($name, $branch, $price, $seats, $transmission, $image) {
+    public function create($name, $branch, $price, $seats, $transmission,$description, $image) {
         $stmt = $this->conn->prepare(
-            "INSERT INTO vehicles (name, Branch, price_per_day, seats, transmission, image, available)
+            "INSERT INTO vehicles (name, Branch, price_per_day, seats, transmission, description, image, available)
              VALUES (?, ?, ?, ?, ?, ?, 1)"
         );
-        $stmt->bind_param("ssiiss", $name, $branch, $price, $seats, $transmission, $image);
+        $stmt->bind_param("ssiiss", $name, $branch, $price, $seats, $transmission,$description, $image);
         return $stmt->execute();
+    }
+
+    public function getCarsByOwner($ownerId) {
+        $stmt = $this->conn->prepare(
+            "SELECT * FROM vehicles WHERE owner_id = ? ORDER BY id DESC"
+        );
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getOwnerStats($ownerId) {
+        $stmt = $this->conn->prepare(
+            "SELECT
+                COUNT(*)                            AS total,
+                SUM(status = 'Approved')            AS approved,
+                SUM(status = 'Pending')             AS pending,
+                SUM(status = 'Rejected')            AS rejected
+            FROM vehicles WHERE owner_id = ?"
+        );
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 }
