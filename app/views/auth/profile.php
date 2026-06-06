@@ -22,7 +22,6 @@
                 <?= strtoupper(substr($_SESSION['user']['name'], 0, 1)) ?>
             </div>
             <h2><?= $_SESSION['user']['name'] ?></h2>
-            <p style="color: var(--text-muted); font-size: 13px;"><?= $_SESSION['user']['email'] ?></p>
         </div>
         <nav class="nav-menu">
             <a href="#personal" class="active"><i class="fas fa-user-circle"></i> Personal Profile</a>

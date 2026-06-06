@@ -292,6 +292,6 @@ switch ($uri) {
 
     default:
         http_response_code(404);
-        require "app/views/errors/404.php";
+        require __DIR__ . "/../app/views/errors/404.php";
         break;
 }

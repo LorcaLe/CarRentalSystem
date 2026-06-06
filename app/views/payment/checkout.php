@@ -210,7 +210,7 @@
         e.preventDefault();
         Swal.fire({
             title: 'Confirm Booking?',
-            html: `<div>Total after 15% online discount:<br><strong style="font-size:1.3rem;color:#2563eb"><?= number_format($finalTotal) ?> ₫</strong></div>`,
+            html: `<div>Total after 15% online discount:<br><strong style="font-size:1.3rem;color:#2563eb"><?= number_format($finalTotal) ?> VND</strong></div>`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#2563eb',

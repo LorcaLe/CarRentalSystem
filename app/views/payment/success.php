@@ -19,7 +19,7 @@
         <h2 class="fw-bold mt-3">Payment Successful!</h2>
         <p class="text-muted">Thank you for choosing Luxury Car Rental. Your booking has been confirmed.</p>
         <p class="small text-secondary">You will be redirected to your bookings in <span id="countdown">3</span> seconds...</p>
-        <a href="/car_rental/public/my-booking" class="btn-custom">Go to My Bookings Now</a>
+        <a href="/car_rental/public/my_booking" class="btn-custom">Go to My Bookings Now</a>
     </div>
 
     <script>

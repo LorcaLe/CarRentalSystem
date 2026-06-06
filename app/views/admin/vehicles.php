@@ -137,6 +137,10 @@
                         <div class="col-md-4"><label class="form-label">Fuel Type</label><input type="text" name="fuel_type" class="form-control" placeholder="e.g. Petrol, Diesel, Electric"></div>
                         <div class="col-md-12"><label class="form-label">Transmission</label><select name="transmission" class="form-select"><option value="Automatic">Automatic</option><option value="Manual">Manual</option></select></div>
                         <div class="col-md-12">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Enter vehicle description..."></textarea>
+                        </div>
+                        <div class="col-md-12">
                             <label class="form-label">Car Image</label>
                             <input type="file" name="image" class="form-control" accept="image/*" required onchange="previewImage(this, 'imagePreview')">
                             <div id="imagePreview" class="mt-2 text-center border rounded-3 p-2" style="min-height: 100px; background: #f8f9fa;"></div>
@@ -169,6 +173,10 @@
                         <div class="col-md-4"><label class="form-label">Seats</label><input type="number" name="seats" id="edit_seats" class="form-control" required></div>
                         <div class="col-md-4"><label class="form-label">Fuel Type</label><input type="text" name="fuel_type" id="edit_fuel_type" class="form-control"></div>
                         <div class="col-md-12"><label class="form-label">Transmission</label><select name="transmission" id="edit_transmission" class="form-select"><option value="Automatic">Automatic</option><option value="Manual">Manual</option></select></div>
+                        <div class="col-md-12">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
+                        </div>
                         <div class="col-md-12">
                             <label class="form-label">New Image (Leave blank to keep current)</label>
                             <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(this, 'editImagePreview')">
@@ -216,7 +224,7 @@ function openEditModal(car) {
     document.getElementById('edit_seats').value = car.seats;
     document.getElementById('edit_transmission').value = car.transmission;
     document.getElementById('edit_fuel_type').value = car.fuel_type || ''; 
-    
+    document.getElementById('edit_description').value = car.description || '';
     var myModal = new bootstrap.Modal(document.getElementById('editVehicleModal'));
     myModal.show();
 }

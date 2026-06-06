@@ -113,6 +113,118 @@
         @keyframes btnPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
         body { font-family: 'Inter', sans-serif !important; }
+
+        /* Style chung cho nút điều hướng */
+        .nav-btn {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 50px; /* Bo tròn dạng pill hiện đại */
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Nút Partner: Tinh tế, nhẹ nhàng */
+        .btn-outline {
+            color: #475569; /* Xám đậm nhã nhặn */
+            border: 1px solid #cbd5e1; /* Viền xám mờ */
+            background: transparent;
+        }
+        .btn-outline:hover {
+            border-color: #3b82f6; /* Đổi viền xanh khi hover */
+            color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        /* Nút Login: Nổi bật, đồng bộ với nút Find Vehicle */
+        .btn-solid {
+            color: #ffffff !important; /* Chữ trắng để nổi bật trên nền đậm */
+            background: #3b82f6; /* Xanh dương */
+            border: 1px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); /* Đổ bóng nhẹ tạo chiều sâu */
+        }
+        .btn-solid:hover {
+            background: #2563eb; /* Xanh đậm hơn khi hover */
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px); /* Hiệu ứng nẩy nhẹ */
+        }
+
+/* Khối bọc ngoài: Ép co lại vừa khít nội dung */
+.partner-pill-group {
+    position: relative; /* Dùng làm gốc tọa độ cho Badge */
+    display: inline-flex;
+    align-items: stretch;
+    
+    /* 2 DÒNG QUAN TRỌNG NHẤT ĐỂ ÔM KHÍT 2 NÚT: */
+    width: max-content; 
+    padding: 0 !important; 
+
+    background: #fffbeb;
+    border: 1.5px solid #fbbf24;
+    border-radius: 50px;
+    margin-right: 15px;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+    box-sizing: border-box;
+}
+
+/* Nút bấm: Xóa mọi khoảng cách thừa */
+.pill-btn {
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #92400e;
+    text-decoration: none;
+    padding: 10px 24px;
+    
+    /* QUAN TRỌNG: Triệt tiêu lề ngầm để không đẩy khung bọc ngoài ra xa */
+    margin: 0 !important; 
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s ease;
+    box-sizing: border-box;
+}
+
+/* Nút bên trái: Tự mang đường kẻ phân cách */
+.pill-left {
+    border-radius: 50px 0 0 50px; /* Bo góc hoàn toàn khớp vỏ ngoài */
+    border-right: 1.5px solid #fbbf24; /* Biến chính viền phải thành đường kẻ chia đôi! */
+}
+
+/* Nút bên phải */
+.pill-right {
+    border-radius: 0 50px 50px 0;
+}
+
+/* Hiệu ứng Hover - Đảm bảo tràn viền kín mít */
+.pill-left:hover, .pill-right:hover {
+    background: rgba(245, 158, 11, 0.25);
+}
+
+/* Badge Partner */
+.pill-badge {
+    position: absolute;
+    top: 0;
+    right: -0.75px; /* Dịch nhẹ 0.75px (bằng nửa độ dày viền) để khóa chết vị trí giữa vạch */
+    transform: translate(50%, -50%); /* Neo chính giữa vạch chia */
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
+    letter-spacing: 0.5px;
+    z-index: 10;
+    pointer-events: none; /* Tính năng ẩn: Cho phép rê chuột xuyên qua badge để nút vẫn nhận hover */
+}
     </style>
 </head>
 
@@ -124,12 +236,16 @@
         <div class="nav-links" style="display:flex; align-items:center; gap:12px;">
 
             <?php if (!isset($_SESSION['user'])): ?>
-                <a href="/car_rental/public/partner/login"
-                style="font-weight:600; color:#3b6ef8; border:1.5px solid #3b6ef8;
-                        padding:6px 18px; border-radius:20px; text-decoration:none;
-                        font-size:0.88rem; white-space:nowrap;">
-                    🤝 Partner
-                </a>
+                <div class="partner-pill-group">
+                    <a href="/car_rental/public/partner/register" class="pill-btn pill-left">
+                        <i class="fas fa-car-side"></i> List Your Car
+                        <span class="pill-badge">PARTNER</span>
+                    </a>
+                    
+                    <a href="/car_rental/public/partner/login" class="pill-btn pill-right">
+                        Login
+                    </a>
+                </div>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['user'])): ?>
@@ -149,7 +265,9 @@
                     </div>
                 </div>
             <?php else: ?>
-                <a href="/car_rental/app/views/auth/login.php">👤 Login</a>
+                <a href="/car_rental/app/views/auth/login.php" class="nav-btn btn-solid">
+                    <i class="fas fa-user"></i> Login
+                </a>
             <?php endif; ?>
 
         </div>

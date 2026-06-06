@@ -283,12 +283,12 @@ class Vehicle {
             $stmt = $this->conn->prepare(
                 "UPDATE vehicles SET name=?, Branch=?, price_per_day=?, seats=?, transmission=?, fuel_type=?,description=?, image=? WHERE id=?"
             );
-            $stmt->bind_param("ssiisssi", $name, $branch, $price, $seats, $transmission, $fuelType, $description, $image, $id);
+            $stmt->bind_param("ssiissssi", $name, $branch, $price, $seats, $transmission, $fuelType, $description, $image, $id);
         } else {
             $stmt = $this->conn->prepare(
                 "UPDATE vehicles SET name=?, Branch=?, price_per_day=?, seats=?, transmission=?, fuel_type=?, description=? WHERE id=?"
             );
-            $stmt->bind_param("ssiissi", $name, $branch, $price, $seats, $transmission, $fuelType,$description, $id);
+            $stmt->bind_param("ssiissssi", $name, $branch, $price, $seats, $transmission, $fuelType, $description, $image, $id);
         }
         return $stmt->execute();
     }
@@ -305,12 +305,12 @@ class Vehicle {
         return $stmt->execute();
     }
 
-    public function create($name, $branch, $price, $seats, $transmission,$description, $image) {
+    public function create($name, $branch, $price, $seats, $transmission, $fuelType, $description, $image) {
         $stmt = $this->conn->prepare(
-            "INSERT INTO vehicles (name, Branch, price_per_day, seats, transmission, description, image, available)
-             VALUES (?, ?, ?, ?, ?, ?, 1)"
+            "INSERT INTO vehicles (name, Branch, price_per_day, seats, transmission, fuel_type, description, image, available)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)"
         );
-        $stmt->bind_param("ssiiss", $name, $branch, $price, $seats, $transmission,$description, $image);
+        $stmt->bind_param("ssiissss", $name, $branch, $price, $seats, $transmission, $fuelType, $description, $image);
         return $stmt->execute();
     }
 

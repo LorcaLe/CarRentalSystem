@@ -103,15 +103,20 @@
                                 ?>
                                 <span class="badge <?= $badge ?> rounded-pill px-3"><?= $b['status'] ?></span>
                             </td>
-                            <td class="text-center">
-                                <?php if($b['status'] != 'Cancelled'): ?>
-                                    <a href="javascript:void(0)" onclick="cancelBooking(<?= $b['id'] ?>)" class="btn btn-sm btn-outline-danger shadow-sm">
-                                        Cancel Booking
-                                    </a>
+                            <td>
+                                <?php 
+                                $today = date('Y-m-d');
+                                $isPast = $b['return_date'] < $today;
+                                $isCancelled = $b['status'] === 'Cancelled';
+                                ?>
+
+                                <?php if ($isPast || $isCancelled): ?>
+                                    <span class="text-muted fst-italic">No actions available</span>
                                 <?php else: ?>
-                                    <span class="text-muted small">No actions available</span>
+                                    <button class="btn btn-sm btn-danger" onclick="cancelBooking(<?= $b['id'] ?>)">
+                                        <i class="fas fa-times me-1"></i>Cancel Booking
+                                    </button>
                                 <?php endif; ?>
-                            </td>
                             </td>
                         </tr>
                         <?php endforeach; ?>

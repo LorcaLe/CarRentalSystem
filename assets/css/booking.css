@@ -15,3 +15,204 @@
             padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 500; transition: 0.3s;
         }
         .cancel-btn:hover { background: #dc2626; color: white; }
+                /* ── Toast Notification ── */
+        #toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(60px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            pointer-events: none;
+            max-width: 340px;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        #toast.success { background: #16a34a; }
+        #toast.error   { background: #dc2626; }
+        #toast.info    { background: #2563eb; }
+        #toast .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+        #toast .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0 0 0 8px;
+            line-height: 1;
+        }
+        #toast .toast-close:hover { color: #fff; }
+
+        /* ── Confirm Modal ── */
+        #confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #confirm-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #confirm-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px 28px 24px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            transform: scale(0.9) translateY(10px);
+            transition: transform 0.25s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        #confirm-overlay.show #confirm-box {
+            transform: scale(1) translateY(0);
+        }
+        #confirm-box .confirm-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #fef3c7;
+            color: #d97706;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        #confirm-box h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        #confirm-box p {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .confirm-actions button {
+            flex: 1;
+            padding: 10px 0;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .confirm-actions button:active { transform: scale(0.97); }
+        #confirm-no {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        #confirm-no:hover { background: #e2e8f0; }
+        #confirm-yes {
+            background: #ef4444;
+            color: #fff;
+        }
+        #confirm-yes:hover { background: #dc2626; }
+
+        /* ── Result Popup ── */
+        #result-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #result-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #result-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 36px 28px 28px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            transform: scale(0.9) translateY(10px);
+            transition: transform 0.25s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        #result-overlay.show #result-box {
+            transform: scale(1) translateY(0);
+        }
+        #result-box .result-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        #result-box .result-icon.success { background: #dcfce7; color: #16a34a; }
+        #result-box .result-icon.error   { background: #fee2e2; color: #dc2626; }
+        #result-box h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        #result-box p {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        #result-ok {
+            padding: 10px 32px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            color: #fff;
+        }
+        #result-ok:active { transform: scale(0.97); }
+        #result-ok.success { background: #16a34a; }
+        #result-ok.success:hover { background: #15803d; }
+        #result-ok.error   { background: #dc2626; }
+        #result-ok.error:hover   { background: #b91c1c; }

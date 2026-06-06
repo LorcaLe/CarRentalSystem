@@ -80,15 +80,15 @@ class AdminController {
             $seats = $_POST['seats'];
             $transmission = $_POST['transmission'];
             $fuel_type = $_POST['fuel_type'] ?? 'Petrol'; // Bổ sung fuel_type
-
+            $description = $_POST['description'] ?? '';
             $imageName = time() . '_' . $_FILES['image']['name'];
-            $targetDir = __DIR__ . "/../../../images/"; 
+            $targetDir = __DIR__ . "/../../images/"; 
             $targetFile = $targetDir . basename($imageName);
 
             if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
                 $vehicleModel = new Vehicle();
                 // Truyền đủ tham số bao gồm fuel_type nếu Model yêu cầu
-                $result = $vehicleModel->create($name, $branch, $price, $seats, $transmission, $imageName);
+                $result = $vehicleModel->create($name, $branch, $price, $seats, $transmission, $fuel_type, $description, $imageName);
                 
                 if ($result) {
                     header("Location: /car_rental/public/admin/vehicles?success=1");
@@ -109,17 +109,17 @@ class AdminController {
             $price = $_POST['price_per_day'];
             $seats = $_POST['seats'];
             $transmission = $_POST['transmission'];
-            $fuel_type = $_POST['fuel_type']; 
-            
+            $fuel_type   = $_POST['fuel_type'] ?? '';
+            $description = $_POST['description'] ?? '';
             $imageName = null;
             if (!empty($_FILES['image']['name'])) {
                 $imageName = time() . '_' . $_FILES['image']['name'];
-                move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . "/../../../images/" . $imageName);
+                move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . "/../../images/" . $imageName);
             }
 
             $vehicleModel = new Vehicle();
             // Đã fix: Truyền đủ các tham số khớp với hàm update trong Model
-            if ($vehicleModel->update($id, $name, $branch, $price, $seats, $transmission, $fuel_type, $imageName)) {
+            if ($vehicleModel->update($id, $name, $branch, $price, $seats, $transmission, $fuel_type, $description, $imageName)) {
                 header("Location: /car_rental/public/admin/vehicles?msg=updated");
             } else {
                 echo "Cập nhật thất bại!";

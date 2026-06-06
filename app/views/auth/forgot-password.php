@@ -58,13 +58,12 @@
     </div>
 
     <script>
-        // Hàm chuyển bước (Chỉ hiện bước cần thiết)
         function showStep(stepNum) {
             document.querySelectorAll('.step-container').forEach(s => s.classList.remove('active'));
             document.getElementById('step' + stepNum).classList.add('active');
         }
 
-        // STEP 1: Gửi OTP
+        
         document.getElementById("formStep1").onsubmit = function(e) {
             e.preventDefault();
             Swal.showLoading();
@@ -83,12 +82,12 @@
                     text: data,
                     confirmButtonColor: '#2563eb'
                 }).then(() => {
-                    showStep(2); // Hiện bảng nhập OTP
+                    showStep(2); 
                 });
             });
         };
 
-        // STEP 2: Xác thực OTP
+        
         function verifyOTP() {
             let otp = document.getElementById("otp").value;
             if(otp.length < 6) {
@@ -104,14 +103,14 @@
             .then(res => res.text())
             .then(data => {
                 if(data.trim() == "OTP verified") {
-                    showStep(3); // Hiện bảng đổi mật khẩu
+                    showStep(3); 
                 } else {
                     Swal.fire('Error', data, 'error');
                 }
             });
         }
 
-        // STEP 3: Logic Mật khẩu mạnh & Confirm
+        
         function validatePass() {
             const pass = document.getElementById("newPassword").value;
             const confirm = document.getElementById("confirmPassword").value;
